@@ -2,10 +2,10 @@
 
 Complete this one group record. Link actual issues, diffs, tests and reviews; avoid copying entire histories. Blank fields are intentional. Duplicate rows as needed. Use synthetic data only. Every member records their own meaningful contribution. Do not invent results, reviews or Copilot use.
 
-- Group/tutorial: [response]
-- Members, GitHub usernames and cohorts: [response]
-- Repository URL: [response]
-- Starting SHA: [response]
+- Group/tutorial: Monday 9:30-11:30 tutorial, group 3
+- Members, GitHub usernames and cohorts: Julian Low (`julianlow83`), Labiba Taskin (`TODO`), Tanika Young (`u3334655`)
+- Repository URL: https://github.com/julianlow83/st1-assignment-3
+- Starting SHA: `11d3d21`
 
 ## A Requirement to issue activities
 
