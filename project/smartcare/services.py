@@ -29,13 +29,20 @@ class PatientService:
         return patient
 
     def find_patient(self, patient_id: str) -> Patient:
-        """Stage 6 TODO: return the stored patient for a valid patient ID.
+        """Return the stored patient for a valid patient ID.
 
-        Completion must raise LookupError for absence and ValueError for
-        a blank/invalid ID. It must not create a replacement patient.
-        The starter deliberately raises NotImplementedError.
+        Completion raises LookupError for absence and ValueError for
+        a blank/invalid ID. It does not create a replacement patient.
         """
-        raise NotImplementedError('Stage 6: patient lookup')
+        if not isinstance(patient_id, str) or not patient_id.strip():
+            raise ValueError("Patient ID must be a non-blank string.")
+
+        trimmed_id = patient_id.strip()
+        patient = self.data_store.find_patient(trimmed_id)
+        if patient is None:
+            raise LookupError(f"Patient with ID '{trimmed_id}' not found.")
+
+        return patient
 
 
 class PractitionerService:
@@ -64,14 +71,21 @@ class PractitionerService:
         return practitioner
 
     def find_practitioner(self, practitioner_id: str) -> Practitioner:
-        """Stage 6 TODO: return the stored practitioner for a valid ID.
+        """Return the stored practitioner for a valid ID.
 
-        Completion must raise LookupError for absence and ValueError for
-        a blank/invalid ID. It must not create a replacement
-        practitioner. The starter deliberately raises
-        NotImplementedError.
+        Completion raises LookupError for absence and ValueError for
+        a blank/invalid ID. It does not create a replacement
+        practitioner.
         """
-        raise NotImplementedError('Stage 6: practitioner lookup')
+        if not isinstance(practitioner_id, str) or not practitioner_id.strip():
+            raise ValueError("Practitioner ID must be a non-blank string.")
+
+        trimmed_id = practitioner_id.strip()
+        practitioner = self.data_store.find_practitioner(trimmed_id)
+        if practitioner is None:
+            raise LookupError(f"Practitioner with ID '{trimmed_id}' not found.")
+
+        return practitioner
 
 
 class AppointmentService:
@@ -133,13 +147,29 @@ class AppointmentService:
         return appointment
 
     def cancel_appointment(self, appointment_id: str) -> Appointment:
-        """Stage 6: cancel through the domain method and retain the
+        """Cancel an appointment through the domain method and retain the
         appointment.
 
         Return the cancelled object. Unknown IDs raise LookupError;
-        invalid transitions raise ValueError and leave state unchanged.
+        invalid transitions or blank/invalid IDs raise ValueError and leave
+        state unchanged.
         """
-        raise NotImplementedError('Stage 6: appointment cancellation')
+        if not isinstance(appointment_id, str) or not appointment_id.strip():
+            raise ValueError("Appointment ID must be a non-blank string.")
+
+        trimmed_id = appointment_id.strip()
+        appointment = self.data_store.find_appointment(trimmed_id)
+
+        if appointment is None:
+            raise LookupError(f"Appointment with ID '{trimmed_id}' not found.")
+
+        if appointment.status != AppointmentStatus.SCHEDULED:
+            raise ValueError(
+                f"Cannot cancel appointment in status '{appointment.status.value}'."
+            )
+
+        appointment.cancel()
+        return appointment
 
     def list_practitioner_appointments(
         self,
