@@ -9,58 +9,98 @@ Complete this one group record. Link actual issues, diffs, tests and reviews; av
 
 ## A Requirement to issue activities
 
-### FR-02 Patient Search
+**Title:** FR-02: Implement Patient Search by Patient ID
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+**Context:** Currently, PatientService.find_patient will raise NotImplementedError. We need the ability to search for and retrieve stored patient records using a unique patient_id. The service must interface with SmartCareDataStore and enforce the required lookup validation contracts.
 
-### FR-06 Appointment Cancellation with FR-07 retained history
+**Requirement:** FR-02: Find a patient by patient ID.
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+Acceptance criteria: 
+
+1. Searching with a valid, existing patient_id will return the exact stored Patient object.
+2. Input IDs are trimmed of th surrounding whitespace before lookup and are case-sensitive.
+3. Searching for a valid, non-blank patient_id that is absent from the store will raise LookupError.
+4. Blank, whitespace-only, empty, or non-string IDs raise ValueError.
+5. Unsuccessful or successful lookups leave session data and stored objects unchanged.
+
+Scope: 
+
+1. Updating PatientService.find_patient in project/smartcare/services.py and adding unit tests in project/tests/test_services.py. 
+2. Exclude name/substring searches, external databases, or CLI menu integrations.
+
+Definition of Done: 
+
+1. PatientService.find_patient implemented; focused unit tests added to project/tests/test_services.py covering valid lookups, absent lookups, trimmed/case-sensitive IDs, and ValueError rejections
+2. All 8 baseline tests mus pas; peer code review completed and approved via PR before merging to main.
+
+Owner/s: Julian, Labiba, Tanika
+
+**Actual issue link:** https://github.com/julianlow83/st1-assignment-3/issues/2#issue-6008989965
+
+**Title: FR-06 / FR-07:** Implement Appointment Cancellation with Retained History
+
+**Context:** AppointmentService.cancel_appointment raises NotImplementedError. We need to be able to cancel scheduled appointments while keeping the historical records retrievable in current session memory. Implementation must execute domain transitions without deleting objects or breaking store rules.
+
+****Requirement:**
+
+- FR-06: Cancel only a SCHEDULED appointment. 
+- FR-07: Retain the same appointment with CANCELLED status in current-session history.
+
+**Acceptance criteria:**
+
+1. Cancelling an appointment with status SCHEDULED executes Appointment.cancel(), updates status to CANCELLED, and returns the same Appointment object.
+2. Cancelled appointment remains stored in SmartCareDataStore with CANCELLED status and remains retrievable in history queries.
+3. Attempting to cancel an appointment that is already CANCELLED or COMPLETED raises ValueError without modifying state.
+4. A valid but unknown appointment_id raises LookupError; blank or invalid IDs raise ValueError.
+5. The operation does not delete the appointment object or create a replacement instance.
+
+**Scope:** Implementing AppointmentService.cancel_appointment in project/smartcare/services.py and writing corresponding test assertions in project/tests/test_services.py. Exclude rescheduling, prompt-driven console menus, or persistent file/database storage.
+
+**Definition of Done:** AppointmentService.cancel_appointment implemented; unit tests added in project/tests/test_services.py asserting same-object return, status transition to CANCELLED, history retention, and error rejections; all 8 baseline checks pass; peer review and GitHub Copilot comparison documented and approved prior to the merge.
+
+**Owner:** Julian Low, Labiba Taskin, Tanika Young
+
+**Actual issue link:** https://github.com/julianlow83/st1-assignment-3/issues/3#issue-6009069022
 
 ## B Commit quality
 
-| Original example | Strong or Weak | Reason |
-|---|---|---|
-| changes | [select] | [response] |
-| final version | [select] | [response] |
-| Add patient search by ID | [select] | [response] |
-| fix stuff | [select] | [response] |
-| Prevent cancellation of completed appointments | [select] | [response] |
+| Original example | Strong or Weak | Reason                                                                                                                                     |
+|---|----------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| changes | WEAK           | Very generic/vague and doesn't say what files were modified, features added or the reason for commit.                                      |
+| final version | WEAK           | Not informative, does not describe the technical changes made, possibly misleading by implying no further changes required.                |
+| Add patient search by ID | STRONG         | Clear and concise, explains the specific functional capability (FR-02 patient lookup) added to the codebase.                               |
+| fix stuff | WEAK           | Non-descriptive and unprofessionally worded. We don't know what defect was resolved, which components were affected, or how it was tested. |
+| Prevent cancellation of completed appointments | STRONG         | Descriptive and intent-focused; explicitly states the specific domain business rule and state transition guardrail (FR-06/BR-06) enforced. |
 
 ## C Over scoped PR review
 
 A cancellation PR also renames unrelated patient fields, restructures unrelated code and adds a new dependency.
 
-- Scope concerns: [response]
-- Responsibility and architecture concerns: [response]
-- Testing and review concerns: [response]
+- **Scope concerns:** The PR introduces unrelated changes that fall outside the appointment cancellation requirement (FR-06/FR-07). Specifically, it renames unrelated Patient fields, restructures unrelated code modules, and adds an unapproved new third-party dependency.
+- **Responsibility and architecture concerns:** Modifying core Patient properties and adding external dependencies violates single-responsibility boundaries and pollutes the domain model. The SmartCare architecture requires keeping changes isolated to the specific service workflow (AppointmentService.cancel_appointment) without modifying standard library baselines or unrelated domain entities.
+- **Testing and review concerns:** Renaming Patient fields introduces high regression risk across the baseline test suite (test_starter.py) and obscures the core pull request diff. A passing test run does not validate architectural boundary violations or unapproved dependencies, making it difficult for reviewers to verify the actual cancellation behaviour.
 - Changes to remove or separate, with reasons: [response]
+  1. Revert all Patient field renamings and structural code changes: These create merge conflicts and break existing codebase contracts. 
+  2. Remove the new third-party dependency entirely: The application must run using only standard Python libraries and supplied starter utilities. 
+  3. Separate into a single focused PR: Request the author resubmit a PR containing only the AppointmentService.cancel_appointment implementation and its corresponding tests in test_services.py. If patient refactoring is necessary, it must be tracked in a separate, dedicated issue.
 
 ## D Challenge a weak Copilot review
 
 GitHub Copilot says: "Looks good; tests pass."
 
-- Missing evidence: [response]
-- Follow-up review question 1: [response]
-- Follow-up review question 2: [response]
-- Follow-up review question 3: [response]
-- Follow-up review question 4: [response]
-- Follow-up review question 5: [response]
-- Additional questions if useful: [response]
+- Missing evidence: 
+1. No evidence that the unit tests actually verify object identity, exact state transitions, or retained history, rather than just asserting non-null values.
+2. No verification mapping specific lines of code and assertions back to acceptance criteria (FR-02, FR-06, FR-07).
+3. No evidence checking whether domain encapsulation was respected.
+4. No proof that invalid transitions and unknown/whitespace IDs were tested and correctly raised ValueError or LookupError.
+5. Copilot cannot actually run tests; it merely reads text. There is no human-observed verification log showing execution commands (python -m pytest), code SHAs, or exact test outputs.
+
+- **Follow-up review question 1:** "Which specific test function in test_services.py proves that cancel_appointment returns the exact same Appointment object instance rather than instantiating a new replacement record?"
+- **Follow-up review question 2:** "Where in the diff does AppointmentService.cancel_appointment delegate the state transition to the domain method Appointment.cancel(), and how do we verify that protected domain attributes were not mutated directly by the service?"
+- **Follow-up review question 3:** "What line in the unit tests verifies that a cancelled appointment remains stored in SmartCareDataStore with status CANCELLED and continues to be retrievable via appointment lookups?"
+- **Follow-up review question 4:** "How do the new test cases verify that attempting to cancel an appointment from a COMPLETED state or calling repeat cancellations raises ValueError while leaving the appointment's state unchanged?"
+- **Follow-up review question 5:** "What explicit assertions confirm that lookups with trimmed whitespace, case-sensitive strings, or invalid/blank IDs behave according to the contract by raising ValueError or LookupError appropriately?"
+- **Additional questions if useful:** N/A
 
 ## E Team workflow agreement
 
@@ -77,10 +117,10 @@ GitHub Copilot says: "Looks good; tests pass."
 
 Create at least two focused issues. Add a linked practitioner-lookup issue or an explicit supporting criterion with the tutor if needed to cover all three service targets.
 
-| Issue link | Requirement | Owner | Acceptance criteria or precise link | Status |
-|---|---|---|---|---|
-| [issue 1] | [response] | [response] | [response] | [response] |
-| [issue 2] | [response] | [response] | [response] | [response] |
+| Issue link | Requirement | Owner                  | Acceptance criteria or precise link                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Status |
+|---|---|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| https://github.com/julianlow83/st1-assignment-3/issues/2#issue-6008989965 | FR-02: Patient Search | Julian, Labiba, Tanika | 1. Searching with a valid, non-blank patient_id returns the exact stored Patient object. <br/> 2. Inputs are trimmed of surrounding whitespace prior to lookup and are strictly case-sensitive.<br/>3. Valid but absent patient_id raises LookupError.<br/>4. Blank, empty, or non-string IDs raise ValueError.<br/>5. Operations preserve stored entity state.                                                                                                                                       | In Progress |
+| https://github.com/julianlow83/st1-assignment-3/issues/2#issue-6008989965 | FR-06 / FR-07: Appointment Cancellation with Retained History | Julian, Labiba, Tanika | 1. Cancelling a SCHEDULED appointment executes Appointment.cancel(), updates status to CANCELLED, and returns the same object.<br/>2. The cancelled appointment remains stored in session history and retrievable via lookups (FR-07).<br/>3. Cancelling an already CANCELLED or COMPLETED appointment raises ValueError without altering state.<br/>4. Valid unknown ID raises LookupError; blank or invalid ID raises ValueError.<br/>5. Does not delete the object or create a replacement record. | In Progress |
 
 ## G Pull request evidence
 
