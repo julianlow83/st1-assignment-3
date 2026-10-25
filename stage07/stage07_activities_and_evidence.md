@@ -12,36 +12,72 @@ All Assignment 3 stage materials are provided from the beginning. Complete this 
 
 For each requirement, propose one positive test, one negative test and the key assertion.
 
-| Requirement | Positive test | Negative test | Key assertion |
-|---|---|---|---|
-| FR-01 Register patient | [response] | [response] | [response] |
-| FR-05 Prevent practitioner conflict | [response] | [response] | [response] |
-| FR-06 Cancel appointment | [response] | [response] | [response] |
-| FR-07 Retain cancelled history | [response] | [response] | [response] |
+| Requirement | Positive test                                                                                                        | Negative test | Key assertion                                                                                                                                                                                                                                                                                                                                                                            |
+|---|----------------------------------------------------------------------------------------------------------------------|---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FR-01 Register patient | Register a patient with a valid, non-blank, unused ID (e.g., 'P101') and a required full name (e.g., 'Alice Smith') via PatientService.register_patient('P101', 'Alice Smith'). | Attempt to register a patient with an existing, previously registered patient ID (e.g., 'P101') or a blank/invalid ID (e.g., '' or '   ') via PatientService.register_patient(). | **Positive:** Assert that the returned Patient object is stored in the data store, has patient_id == 'P101', and name == 'Alice Smith'.<br/>**Negative:** Assert that pytest.raises(ValueError) is raised for duplicate or blank IDs and that the original stored patient record remains unmutated.                                                                                      |
+| FR-05 Prevent practitioner conflict | Book an appointment for Practitioner 'D201' at datetime 2026-11-01 10:00, then book a second appointment for a different Practitioner (e.g., 'D202') at the exact same datetime 2026-11-01 10:00.                                                                                                           | Attempt to book a second appointment for the same Practitioner 'D201' at the exact same datetime 2026-11-01 10:00 while the first appointment is in SCHEDULED status. | **Positive:** Assert that the second appointment for Practitioner 'D202' is successfully created with status AppointmentStatus.SCHEDULED.<br/>**Negative:** Assert that pytest.raises(ValueError) is raised when booking Practitioner 'D201' at the occupied time slot, and that the existing booking remains unchanged.                                                                 |
+| FR-06 Cancel appointment | Call AppointmentService.cancel_appointment('A301') on an existing appointment 'A301' that currently has status AppointmentStatus.SCHEDULED.                                                                                                          | Attempt to cancel an appointment 'A301' that is already in CANCELLED status (repeated cancellation) or COMPLETED status, or attempt cancellation with an unknown/blank appointment ID. | **Positive:** Assert that cancel_appointment('A301') returns the exact same Appointment object instance (retrieved is original) and that its status property equals AppointmentStatus.CANCELLED.<br/>**Negative:** Assert that pytest.raises(ValueError) (for repeated/illegal cancellation) or pytest.raises(LookupError) (for unknown ID) is raised without altering the stored state. |
+| FR-07 Retain cancelled history | After successfully cancelling appointment 'A301', perform a session lookup via AppointmentService.find_appointment('A301') or query practitioner/patient appointment listings.                                                                                                          | Verify that cancelling appointment 'A301' does not remove, delete, or return None when searching for 'A301' in SmartCareDataStore. | **Positive:** Assert that find_appointment('A301') returns the target Appointment object and its status remains AppointmentStatus.CANCELLED within current-session memory.<br/>**Negative:** Assert that data_store.find_appointment('A301') is not None (proving the record was retained in the store rather than hard-deleted).                                                        |
 
 ### Activity 2 Strong or weak assertion
 
 For each, select Strong for stated behaviour or Weak/unclear and explain why. State the behaviour and limits.
 
 `assert True`
-Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
+Judgement: 
+<br>**Classification:** Weak/unclear
+<br>**Reason:** Establishes only that execution reached the assertion without throwing an uncaught exception; proves zero product or requirement behavior.
 
 `assert appointment is not None`
-Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
+Judgement: 
+<br>**Classification:** Weak/unclear 
+<br>**Reason:** Establishes only that a non-null reference exists; does not prove the object has correct attributes, valid types, or required status.
 
 `assert appointment.status == AppointmentStatus.CANCELLED`
-Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
+Judgement: 
+<br>**Classification:** Strong
+<br>**Reason:** Explicitly establishes that the appointment's observable domain status transitioned to `AppointmentStatus.CANCELLED` as required by FR-06 / AC-05.1.
 
 `assert len(results) > 0`
-Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
+Judgement: 
+<br>**Classification:** Weak/unclear
+<br>**Reason:** Establishes only that a collection is non-empty; fails to verify result count, filtering correctness, sorting order, or element identity.
 
 `assert data_store.find_appointment('A1') is appointment`
-Judgement: [Strong for stated behaviour / Weak/unclear]  Why: [response]
+Judgement:
+<br>* **Classification:** Strong
+<br>**Reason:** Establishes object identity and memory persistence in `SmartCareDataStore` (FR-07 / AC-05.2), confirming the store returns the exact original instance rather than a newly constructed copy.
+
 
 ### Activity 3 Boundary thinking
 
 Design boundary or edge cases for blank identifiers, whitespace-only names, same-time practitioner bookings, cancelled appointments and invalid status transitions.
-For each input/state, expected result and supporting contract: [response]
+For each input/state, expected result and supporting contract:
+
+* **Blank identifiers:**
+  * **Input/State:** Empty string `""`, whitespace string `"   "`, or non-string `None` passed as patient_id, practitioner_id, or appointment_id.
+  * **Expected Result:** Raises `ValueError` without mutating store state or performing lookup.
+  * **Contract:** Revision 2 Validation Contract: IDs must be trimmed non-blank strings; invalid inputs raise `ValueError`.
+
+* **Whitespace-only names:**
+  * **Input/State:** Name or specialty field containing only whitespace (e.g., `'   '`).
+  * **Expected Result:** Raises `ValueError` on construction or registration.
+  * **Contract:** Revision 2 Validation Contract: Required names and specialty are non-blank.
+
+* **Same-time practitioner bookings:**
+  * **Input/State:** Booking Practitioner 'D201' at exact datetime '2026-11-01 10:00' when an existing SCHEDULED booking exists for 'D201' at that exact time. Boundary checks: different practitioner at same time or booking after cancellation.
+  * **Expected Result:** Same practitioner + exact time raises `ValueError`; different practitioner or post-cancellation time slot succeeds.
+  * **Contract:** FR-05 / BR-05 / AC-04.1 & AC-04.2: Same practitioner/exact time/SCHEDULED conflicts; another practitioner at the same time is allowed.
+
+* **Cancelled appointments:**
+  * **Input/State:** Invoking cancellation on a SCHEDULED appointment 'A301', followed by a store lookup.
+  * **Expected Result:** Status transitions to `CANCELLED`; exact object is retained and retrievable in session store; time slot is freed for future bookings.
+  * **Contract:** FR-06 / FR-07 / AC-05.1 & AC-05.2: Cancel SCHEDULED appointment and retain same instance in current-session history.
+
+* **Invalid status transitions:**
+  * **Input/State:** Attempting `cancel_appointment()` on an appointment that is already in `CANCELLED` or `COMPLETED` status.
+  * **Expected Result:** Raises `ValueError` and leaves appointment status unmutated.
+  * **Contract:** FR-06 / AC-05.3 / BR-06: Cancel only a SCHEDULED appointment; repeated cancellation is rejected.
 
 ### Activity 4 Critique GitHub Copilot tests
 
@@ -58,7 +94,8 @@ GitHub Copilot generates five tests, all of which pass. Two only assert that obj
 ### Tutorial exit question
 
 Why can 100% code coverage coexist with poor software verification?
-[response]
+
+**Answer:** Code coverage is a quantitative metric that measures which lines of code executed during a test run; it does not measure requirement correctness, state accuracy, or assertion strength. 100% coverage can coexist with poor verification because tests may use weak assertions (e.g., `assert True` or checking non-null references), omit critical negative/boundary scenarios, or pass invalid inputs without verifying domain contracts. A test suite can touch every line of code while completely failing to catch broken business logic or missing specification requirements.
 
 ## B Requirement to Test Traceability Matrix
 
