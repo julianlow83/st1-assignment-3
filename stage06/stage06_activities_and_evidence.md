@@ -190,43 +190,43 @@ Why is a high commit count not necessarily evidence of strong contribution?
 
 1. What is version control?
 
-[response]
+Version control (such as Git) is a software engineering system that tracks, manages, and records changes made to a codebase over time.
 
 2. Why is a feature branch useful?
 
-[response]
+A feature branch isolates new development or bug fixes from the stable main integration branch, allowing team members to write code, execute local unit tests, and experiment without breaking the working application for others.
 
 3. What makes a commit a good engineering commit?
 
-[response]
+A good engineering commit represents a single, logical, and coherent unit of work accompanied by a clear, imperative commit message explaining what changed and why.
 
 4. What is a pull request?
 
-[response]
+A Pull Request (PR) is a formal mechanism on platforms like GitHub to propose merging code from a feature branch into a target branch (such as main).
 
 5. What is the purpose of code review?
 
-[response]
+The purpose of code review is to ensure software quality, correctness, maintainability, and alignment with project requirements before code enters the stable main branch.
 
 6. What does a Git diff show?
 
-[response]
+A Git diff shows the line-by-line comparison between two commits, branches, or file states. It explicitly highlights added lines (green/+), deleted lines (red/-), and modified lines of code, allowing developers and reviewers to inspect exact code changes and ensure no accidental, unrelated modifications were staged.
 
 7. What is a Definition of Done?
 
-[response]
+A Definition of Done (DoD) is a shared, agreed-upon checklist of completion criteria that must be satisfied before a feature or issue is considered truly finished.
 
 8. What is the appropriate role of GitHub Copilot in pull-request review?
 
-[response]
+GitHub Copilot serves as an assistant for candidate suggestions and comparison, not an autonomous reviewer or merge authority. Human team members must record independent review observations first, use Copilot's prompt output as secondary input, critically evaluate its suggestions (accepting, modifying, or rejecting them with explicit justification), and independently verify claims via actual test execution.
 
 9. Why should individual contribution not be judged only by commit count?
 
-[response]
+Commit count is a misleading metric that can be easily inflated by artificial, micro-commits (e.g., fixing a single typo per commit) or artificially inflated commit activity.
 
 10. What is the Stage 6 engineering rule?
 
-[response]
+The Stage 6 engineering rule is to follow the complete feature-branch lifecycle for every change: update main, create a focused issue and feature branch, implement code and unit tests, inspect the diff, push meaningful commits, open a PR, perform an independent human review before comparing with Copilot, resolve feedback, obtain teammate approval, merge into main, and verify the integrated build on main across all team members' local environments.
 
 ## M Completion and handover
 

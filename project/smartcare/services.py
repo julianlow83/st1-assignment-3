@@ -1,6 +1,5 @@
 """Simple workflows using a shared SmartCareDataStore object."""
 
-
 from datetime import datetime
 
 from smartcare.data_store import SmartCareDataStore
