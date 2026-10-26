@@ -85,11 +85,11 @@ GitHub Copilot generates five tests, all of which pass. Two only assert that obj
 
 | Candidate | What is wrong | Rewritten test intention |
 |---|---|---|
-| 1 | [response] | [response] |
-| 2 | [response] | [response] |
-| 3 | [response] | [response] |
-| 4 | [response] | [response] |
-| 5 | [response] | [response] |
+| 1 (Non-null booking check): | Weak assertion; checking assert appointment is not None proves only that an object reference exists, not that fields match inputs, status is SCHEDULED, or the record was stored in SmartCareDataStore. | Assert that book_appointment() returns an Appointment instance with status == AppointmentStatus.SCHEDULED, matching input fields, and identical identity when retrieved via data_store.find_appointment(). |
+| 2 (assert True cancellation check): | Weak assertion; assert True verifies zero domain behavior or state transitions and will pass even if cancellation logic is completely broken. | Assert that cancel_appointment() transitions the object's status property to AppointmentStatus.CANCELLED, returns the exact same object instance, and retains it in session memory. |
+| 3 (SMS notification assertion): | Invented requirement; external SMS notifications are absent from the SmartCare baseline specifications. | Remove SMS assertions completely and test only core service behavior: valid participant registration and scheduled appointment storage. |
+| 4 (Email confirmation check): | Invented requirement; email dispatch is out of scope and introduces unsupported third-party behavior. | Verify valid cancellation transitions (SCHEDULED $\rightarrow$ CANCELLED) and session store persistence without external side-effects. |
+| 5 (Non-null patient registration check): | Weak assertion; fails to verify store persistence, field accuracy, or whitespace trimming. | Assert that register_patient() stores the exact Patient object with trimmed ID and name, retrievable via data_store.find_patient(). |
 
 ### Tutorial exit question
 
