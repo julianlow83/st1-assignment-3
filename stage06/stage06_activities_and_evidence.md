@@ -167,9 +167,26 @@ Record meaningful required use, not every trivial completion. Repeat per signifi
 
 - Member and task: Julian Low — Task: Generate and evaluate candidate pytest unit tests for Appointment Cancellation (AC-05.1 / AC-05.2).
 - Prompt/purpose and relevant issue/diff:
-  - Purpose: Evaluate Copilot's proposed unit test candidates against human test design to verify boundary logic, state transitions, and store memory retention.
-  - Relevant Issue / Diff: Closes #1 (FR-06 / FR-07). Diff under review includes cancel_appointment logic in smartcare/services.py and unit test functions in tests/test_services.py.
-
+  - Purpose: Evaluate Copilot's candidate unit tests for AC-05.1 and AC-05.2 against human test design to verify status transitions, repeated cancellation rejection, and session store retention.
+  - Relevant Issue / Diff: Closes #1 (FR-06 / FR-07). Closes #1 (FR-06 / FR-07). Diff under review includes cancel_appointment logic in smartcare/services.py and unit tests in tests/test_services.py.
+  - Prompt Used: "Generate 3 candidate pytest unit tests for requirement AC-05.1 (Cancellation State Change) and AC-05.2 (History Retention). Include positive happy path, repeated cancellation rejection, and session store retention checks. Use pytest fixtures and strict object assertions."
+- Summary of output:
+  1. test_ac_05_1_cancelled_status_change_happy_path: Cancels a scheduled appointment A301, asserting cancelled is booked, status is CANCELLED, and it remains retrievable via appointment_svc and store.
+  2. test_ac_05_1_repeated_cancellation_rejected: Performs a second cancellation on A301 and asserts pytest.raises(ValueError, match="Cannot cancel appointment in status 'cancelled'"),
+  3. test_ac_05_2_session_store_retains_cancelled_appointment_record: Cancels A301 and checks store.find_appointment("A301") and store.list_appointments(), asserting object identity (retained is booked), non-null status, and status equality (CANCELLED).
+- Human check against actual code, requirements and tests:
+  1. Strong & accurate. Asserts strict object identity (cancelled is booked), correct status transition (AppointmentStatus.CANCELLED), and store retrieval.
+  2. Partially brittle exception string. Properly verifies pytest.raises(ValueError), but checking the exact exception message string (match="Cannot cancel...") makes the test fragile if the service exception phrasing is slightly different.
+  3. Slight redundancy. Correctly asserts retention in store.list_appointments(), but includes a redundant assert retained is not None right after asserting assert retained is booked (since booked is already confirmed non-null).
+- Decision — Accept / Modify / Reject:
+  1. Candidate 1 (test_ac_05_1_cancelled_status_change_happy_path): Accept
+  2. Candidate 2 (test_ac_05_1_repeated_cancellation_rejected): Modify
+  3. Candidate 3 (test_ac_05_2_session_store_retains_cancelled_appointment_record): Modify
+- Reason: 
+  1. The test is clean, uses strict object identity (is), and directly satisfies AC-05.1.
+  2. Removed the rigid match="Cannot cancel..." regex check from pytest.raises(ValueError) to prevent fragile test failures while keeping the core ValueError assertion intact.
+  3. Removed the redundant assert retained is not None check, keeping the strict object identity assertion (assert retained is booked) and session history checks.
+- Verification/evidence: Executed python -m pytest tests/test_services.py inside project/ 3 passed in 0.06s
 
 ## I Human versus Copilot review comparison
 
