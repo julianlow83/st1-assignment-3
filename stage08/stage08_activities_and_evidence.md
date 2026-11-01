@@ -277,43 +277,67 @@ Each member's substantive contribution and artefact: [complete]
 
 1. What should an engineer do before changing code in response to a failure?
 
-Response: [complete]
+Response: 
+
+Before modifying any application code in response to a failure, an engineer should:
+1. Observe and reproduce the exact failure using synthetic, isolated inputs.
+2. Identify the expected behavior grounded in a documented requirement or acceptance criterion.
+3. Formulate a testable human hypothesis explaining the root cause.
+4. Author or strengthen a focused, failing regression test that reproduces the symptom.
+5. Inspect concrete evidence (e.g., intermediate state, variable values, tracebacks, diffs) to discriminate between candidate causes before applying any code changes.
+
 
 2. Where should expected behaviour come from during debugging?
 
-Response: [complete]
+Response: 
+
+Expected behavior must come directly from authoritative requirements, functional specifications, and published acceptance criteria (such as the SmartCare Baseline 2026 Revision 2 specification)[cite: 8]. It must never be derived merely from current failing code behavior, existing flawed test assertions, or speculative assumptions.
 
 3. What is a debugging hypothesis?
 
-Response: [complete]
+Response: 
+
+A debugging hypothesis is an educated, testable explanation proposing the underlying mechanism or decision causing an observed defect. It connects the symptom to a potential root cause in the source code and must be capable of being confirmed or disconfirmed through discriminating checks and concrete evidence.
 
 4. What is a regression test and why is it retained?
 
-Response: [complete]
+Response:
+
+A regression test is an automated test written specifically to capture a previously identified bug or contract boundary. It is retained permanently in the test suite (`test_regressions.py`) to prevent the same defect from being re-introduced during future code changes, refactoring, or feature development.
 
 5. What is meant by root cause?
 
-Response: [complete]
+Response:
+
+Root cause refers to the fundamental design choice, logic flaw, or improper state decision in the codebase that created the defective behavior. It is distinct from the failure manifestation site or traceback location, which merely indicates where execution crashed or where an assertion failed.
 
 6. What is refactoring?
 
-Response: [complete]
+Response: 
+
+Refactoring is the process of modifying the internal structure, formatting, or organization of existing code to improve readability, maintainability, or design quality without changing its external behavior or functional contracts. Refactoring must always be executed under passing regression tests.
 
 7. What is a swallowed exception?
 
-Response: [complete]
+Response:
+
+A swallowed exception occurs when an exception is caught in a `try...except` block but handled silently (e.g., using `pass` or returning a default value like `None`) without logging, re-raising, or correcting the invalid state. Swallowing exceptions masks defects, hides failure causes, and leaves application state corrupted.
 
 8. What is a code smell?
 
-Response: [complete]
+Response: 
+
+A code smell is a surface-level indicator in source code that suggests a deeper design or structural issue (e.g., long methods, duplicated code, magic status strings, or deeply nested conditionals). While not necessarily an active bug, a code smell increases complexity, reduces readability, and makes code more prone to defects.
 
 9. How should GitHub Copilot-generated debugging diagnoses be treated?
 
-Response: [complete]
+Response: GitHub Copilot diagnoses must be treated strictly as unverified hypotheses. Engineers must evaluate suggestions against requirement contracts, inspect physical code diffs, state explicit Accept/Modify/Reject decisions with justifications, and verify behavior using actual test execution. Copilot output must never substitute for human diagnosis or review.
 
 10. What is the Stage 8 engineering rule?
 
-Response: [complete]
+Response: 
+
+The Stage 8 engineering rule requires engineers to follow a strict disciplined cycle: safe preparation; observe and reproduce; record human hypotheses before Copilot; inspect concrete evidence; apply minimal repairs; verify fail-to-pass regression tests; refactor under passing tests; obtain peer human review; and verify integration on `main`.
 
 ## L. Completion and handover
 
