@@ -300,7 +300,7 @@ The Stage 6 engineering rule is to follow the complete feature-branch lifecycle 
 - PR and another-member reviewer: Reviewed and approved by Tanika
 - Unresolved issue or none: N/A
 - Stage 7 handover status: [ready for tutor checkpoint]
-- Final submitted SHA if later than tested SHA: TBA
+- Final submitted SHA if later than tested SHA:
 
 - [X] Three Stage 6 service targets completed and checked.
 - [X] Original supplied tests retained and passing.
