@@ -214,31 +214,33 @@ Record meaningful required use, not every trivial completion. Repeat per signifi
 Repeat per member. Include only categories that describe actual work; write not applicable where appropriate. Pairing or mentoring can be supported by a short corroborated note.
 
 - Member: Julian
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
+- Implementation: Stage 6
+- Testing: Authored 10 unit test cases in project/tests/test_services.py covering lookup success, unknown ID exceptions, and parameterized non-string input guards. *Evidence:* Executed python -m pytest tests/test_services.py
+- Review: N/A
+- Issue refinement: N/A
+- Design and responsibility discussion:  Participated in team discussion on 26/10/26 where we allocated responsibilities
+- Debugging or integration: N/A
+- Documentation or team support: Worked on Stage 06 with Julian
+
 
 - Member: Labiba
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
+- Implementation: Stage 7
+- Testing: N/A (Worked on another other stage)
+- Review: N/A (Worked on another other stage)
+- Issue refinement: N/A (Worked on another other stage)
+- Design and responsibility discussion:  Participated in team discussion on 26/10/26 where we allocated responsibilities
+- Debugging or integration: N/A (Worked on another other stage)
+- Documentation or team support: Wrked on Stage 07, while Julian and Tanika did Stage 06
+
 
 - Member: Tanika
-- Implementation: [work and evidence]
-- Testing: [work and evidence]
-- Review: [work and evidence]
-- Issue refinement: [work and evidence]
-- Design and responsibility discussion: [work and evidence]
-- Debugging or integration: [work and evidence]
-- Documentation or team support: [work and evidence]
+- Implementation: Stage 6 (with Julian)
+- Testing: N/A
+- Review: Performed peer review on Julian's Pull Request #1, flagging missing type hints in function signatures,
+- Issue refinement: N/A
+- Design and responsibility discussion: Participated in team discussion on 26/10/26 where we allocated responsibilities
+- Debugging or integration: N/A
+- Documentation or team support: Answered questions about GitHub due to having more experience with the platform, worked on Stage 06 with Julian
 
 ## K Exit question
 
