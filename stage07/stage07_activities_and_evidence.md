@@ -195,8 +195,8 @@ Accepted / modified / rejected test decisions and evidence: Accepted modified as
 Run python -m pytest from project/. Retain all accumulated tests. Record the tested SHA accurately.
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
-|---|---|---|---|---|---|---|---|
-| `python -m pytest` | `project/` | `d6e8139` | 24 | 0 | None | None | All accumulated domain, service, and starter tests pass successfully. |
+|---|---|---|--------|---|---|---|---|
+| `python -m pytest` | `project/` | `3132056b9ff6987fd95e8a1ab8f7a3ca574a3a21` | 11     | 0 | None | None | All accumulated domain, service, and starter tests pass successfully. |
 
 **Individual test runs and changed-order independence evidence:** 
 - `python -m pytest tests/test_domain.py` (Result: PASSED)
