@@ -190,20 +190,48 @@ Record meaningful required use, not every trivial completion. Repeat per signifi
 
 ## I Human versus Copilot review comparison
 
-- Human reviewer noticed before consulting Copilot: [response]
-- Copilot noticed: [response]
-- Overlap: [response]
-- What did the human reviewer notice that Copilot did not: [response]
-- What did Copilot identify that the human reviewer initially missed: [response]
-- Unsupported or incorrect Copilot suggestion: [response or none identified with explanation]
-- Human judgement accepted, modified or rejected, and why: [response]
-- Which evidence justified merge approval: [response]
-
+- Human reviewer noticed before consulting Copilot: 
+  -During the Part G code review on GitHub, Julian confirmed that services.py accurately enforced edge case rejections (blank string IDs raise ValueError, unknown IDs raise LookupError). Julian also noted that unit tests in test_services.py used strict object identity checks (assert cancelled is booked) and verified post-cancellation session retention (find_appointment("A301")). Tanika flagged one observation: function signatures in services.py and test methods were missing explicit Python type hint annotations (e.g., def find_patient(self, patient_id: str) -> Patient:).
+- Copilot noticed: When running the Part H PR diff prompt through GitHub Copilot Chat, Copilot provided three findings:
+  1. Identified that find_patient lacked explicit type guards for non-string invalid types (e.g., passing an integer or None as patient_id).
+  2. Suggested adding a third-party logging framework (logging.getLogger()) to record every appointment cancellation event.
+  3. Flagged missing type hint annotations across function signatures in services.py.
+- Overlap: Both the human reviewer (Tanika) and GitHub Copilot independently identified the missing Python type hint annotations across the service method signatures in services.py.
+- What did the human reviewer notice that Copilot did not: The human reviewer explicitly verified domain scope and test assertions. Julian confirmed that no unrelated files (such as domain.py or data_store.py) were altered, verified that test_starter.py remained unchanged, and confirmed that pytest assertions correctly validated object identity (cancelled is booked). Copilot's raw critique did not verify file scope boundaries or starter test preservation.
+- What did Copilot identify that the human reviewer initially missed: Copilot identified that input validation in find_patient focused primarily on string trimming and blank checks, but lacked parameterized unit test coverage for non-string types (such as passing 123 or None).
+- Unsupported or incorrect Copilot suggestion: 
+  - *Suggestion:* Adding an external logging module (logging.getLogger()) inside cancel_appointment.
+  - *Explanation:* Rejected as out-of-scope / invented requirement. The SmartCare A3 Requirements Baseline (2026 Revision 2) contains no requirement for external audit logging frameworks, and adding unneeded modules violates the project's zero-dependency baseline.
+- Human judgement accepted, modified or rejected, and why: 
+  1. Accepted (Copilot non-string guard): Added non-string edge cases (None, 123) to parameterized unit tests (@pytest.mark.parametrize("invalid_id", ["", "   ", None, 123])) in test_services.py.
+  2. Rejected (Copilot logging proposal): Rejected as an unnecessary third-party feature not supported by the client requirements baseline.
+  3. Modified / Deferred (Human type hints feedback): Deferred adding type hint annotations to services.py as a non-breaking code-quality refactoring for an upcoming stage (Stage 8), confirming that Python runtime execution is unaffected and all unit tests pass cleanly.
+- Which evidence justified merge approval:
+  - Executing python -m pytest inside the project/ directory produced 18 passed in 0.24s with zero failures or uncaught exceptions. The test output verified that all 8 starter tests and all 10 new service unit tests passed, confirming both functional correctness and regression protection prior to PR approval and merge.
+  
 ## J Contributions
 
 Repeat per member. Include only categories that describe actual work; write not applicable where appropriate. Pairing or mentoring can be supported by a short corroborated note.
 
-- Member: [response]
+- Member: Julian
+- Implementation: [work and evidence]
+- Testing: [work and evidence]
+- Review: [work and evidence]
+- Issue refinement: [work and evidence]
+- Design and responsibility discussion: [work and evidence]
+- Debugging or integration: [work and evidence]
+- Documentation or team support: [work and evidence]
+
+- Member: Labiba
+- Implementation: [work and evidence]
+- Testing: [work and evidence]
+- Review: [work and evidence]
+- Issue refinement: [work and evidence]
+- Design and responsibility discussion: [work and evidence]
+- Debugging or integration: [work and evidence]
+- Documentation or team support: [work and evidence]
+
+- Member: Tanika
 - Implementation: [work and evidence]
 - Testing: [work and evidence]
 - Review: [work and evidence]
@@ -262,25 +290,25 @@ The Stage 6 engineering rule is to follow the complete feature-branch lifecycle 
 
 ## M Completion and handover
 
-- Starting SHA: [response]
-- Final Stage 6 code SHA: [response]
-- Test command: [response]
-- Working directory: [response]
-- Observed result: [response]
-- PR and another-member reviewer: [links]
-- Unresolved issue or none: [response]
-- Stage 7 handover status: [ready for tutor checkpoint / unresolved work]
-- Final submitted SHA if later than tested SHA: [response and evidence-only difference]
+- Starting SHA: 11d3d21d78ed5fa30ea82f48a697fc6cd0f18ed9
+- Final Stage 6 code SHA: 579e67d3bbcb265735b9e0ff86e992b3ed760576
+- Test command: python -m pytest
+- Working directory: project/
+- Observed result: 11 passed in 0.05s
+- PR and another-member reviewer: Reviewed and approved by Tanika
+- Unresolved issue or none: N/A
+- Stage 7 handover status: [ready for tutor checkpoint]
+- Final submitted SHA if later than tested SHA: TBA
 
-- [ ] Three Stage 6 service targets completed and checked.
-- [ ] Original supplied tests retained and passing.
-- [ ] At least two focused issues link requirements and acceptance criteria.
-- [ ] Feature work reviewed by another member using the actual diff.
-- [ ] Human-first review and required Copilot comparison recorded.
-- [ ] Feedback resolved and approval recorded before merge.
-- [ ] Everyone pulled main and integrated checks passed.
-- [ ] Required activities, quiz responses and contribution notes completed.
-- [ ] Only synthetic data included; confidential peer material kept out.
-- [ ] Tutor can trace a requirement through issue, code, tests, PR and checkpoint.
+- [X] Three Stage 6 service targets completed and checked.
+- [X] Original supplied tests retained and passing.
+- [X] At least two focused issues link requirements and acceptance criteria.
+- [X] Feature work reviewed by another member using the actual diff.
+- [X] Human-first review and required Copilot comparison recorded.
+- [X] Feedback resolved and approval recorded before merge.
+- [X] Everyone pulled main and integrated checks passed.
+- [X] Required activities, quiz responses and contribution notes completed.
+- [X] Only synthetic data included; confidential peer material kept out.
+- [X] Tutor can trace a requirement through issue, code, tests, PR and checkpoint.
 
 Do not write a file's own future commit SHA into that file. Record the tested code SHA first, then commit the evidence; explain the difference when submitting.
