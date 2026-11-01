@@ -126,7 +126,7 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 
 Repeat this block per PR. Record actual events, not planned approvals.
 
-- PR link and title: https://github.com/julianlow83/st1-assignment-3/pull/5 <https://github.com/julianlow83/st1-assignment-3/pull/5>
+- PR link and title: https://github.com/julianlow83/st1-assignment-3/pull/5 
 - Linked issue and requirement: Closes #1 (FR-02: Patient Lookup, FR-03: Practitioner Lookup, FR-06: Cancel Appointment, FR-07: Retain Cancelled History)
 - Feature branch: julian-stage06
 - Changed behaviour:
