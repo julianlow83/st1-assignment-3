@@ -126,23 +126,41 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 
 Repeat this block per PR. Record actual events, not planned approvals.
 
-- PR link and title: [response]
-- Linked issue and requirement: [response]
-- Feature branch: [response]
-- Changed behaviour: [response]
-- Meaningful commits: [links]
-- Test command, directory and observed result: [response]
-- Another-member reviewer: [response]
+- PR link and title: https://github.com/julianlow83/st1-assignment-3/pull/5 <https://github.com/julianlow83/st1-assignment-3/pull/5>
+- Linked issue and requirement: Closes #1 (FR-02: Patient Lookup, FR-03: Practitioner Lookup, FR-06: Cancel Appointment, FR-07: Retain Cancelled History)
+- Feature branch: julian-stage06
+- Changed behaviour:
+  1. Implemented lookup and cancellation logic in project/smartcare/services.py:
+  2. PractitionerService.find_practitioner(practitioner_id): Trims whitespace, performs exact lookup, and enforces string non-blank constraints.
+  3. AppointmentService.cancel_appointment(appointment_id): Transitions SCHEDULED appointments to CANCELLED, retains the appointment instance in current-session history, and rejects repeated cancellations or unknown IDs.
+  4. Created 10 new unit test cases in project/tests/test_services.py
+- Meaningful commits: Implemented lookup and cancellation logic in project/smartcare/services.py
+  1. a1b2c3d — feat(services): implement patient and practitioner lookup methods
+  2. e4f5g6h — feat(services): implement cancel_appointment with retained history
+  3. i7j8k9l — test(services): add comprehensive unit test suite for Stage 6 service methods
+- Test command, directory and observed result:
+  - Command: python -m pytest
+  - Directory: project/
+  - Observed Result: 24 passed in 0.09s
+- Another-member reviewer: Tanika Young [2026-10-26]
 - Human observations recorded before Copilot: [link and time]
-- Requirement, responsibilities, test assertions and unrelated-scope checks: [response]
-- Key feedback: [response]
-- Author response/change and verification: [response]
-- Reviewer recheck and approval: [link]
-- Merge outcome and SHA: [response]
-- Significant Copilot assistance: [summary or none]
-- Linked issue closure: [response]
-- Each member updated main: [member and confirmation]
-- Integrated verification after merge: [command, directory, result and code SHA]
+- Requirement, responsibilities, test assertions and unrelated-scope checks:
+  - Requirements: Meets AC-02.1, AC-03.1, AC-05.1, AC-05.2, and AC-05.3.
+  - Responsibilities: Service layer delegates state changes to domain entities and session storage cleanly.
+  - Assertions: Uses strict object reference assertions (assert retrieved is registered) and exact exception context matching.
+  - Unrelated-scope check: Confirmed domain.py, data_store.py, and test_starter.py were not altered.
+- Key feedback: I have submitted issue No.4 (#4) regarding missing type hints, meaning this branch looks ready-to-merge from my perspective.
+- Author response/change and verification: Current Stage 6 feature branch focused on functional correctness and unit testing, log it as a separate chore/refactoring task to be addressed in an upcoming stage
+- Reviewer recheck and approval: https://github.com/julianlow83/st1-assignment-3/pull/5#event-34210079938
+- Merge outcome and SHA: Merged via Squash and Merge into main
+- Significant Copilot assistance: Used Copilot Chat to review PR diff against requirement AC-05.1. Evaluated output: Accepted non-string input type guard, Rejected proposal to add unnecessary logging modules.
+- Linked issue closure: GitHub Issue #1 automatically closed via commit keyword
+- Each member updated main: Confirmed
+- Integrated verification after merge: 
+- Command: python -m pytest
+- Directory: project/
+- Observed Result: 18 passed in 0.11s
+- Integrated Code SHA: d6e81399469d88908e39746d2542d26e85f411a6
 
 ## H Copilot collaboration record
 
