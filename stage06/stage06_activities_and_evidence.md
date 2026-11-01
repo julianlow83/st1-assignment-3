@@ -106,12 +106,12 @@ GitHub Copilot says: "Looks good; tests pass."
 
 | Practice | Team agreement |
 |---|---|
-| Branch naming | [response] |
-| Commit message convention | [response] |
-| PR size | [response] |
-| Another-member review requirement | [response] |
-| Merge rule | [response] |
-| Significant Copilot disclosure rule | [response] |
+| Branch naming | All new feature work, bug fixes, or task implementations must take place on dedicated, isolated feature branches created off an up-to-date main branch. Direct pushes to main are strictly forbidden. Branch names must be short, lowercase, hyphen-separated, and clearly linked to the task or issue. |
+| Commit message convention | Every commit must represent a single, logical, and runnable unit of work with all local unit tests passing. Commit messages must use clear, imperative, descriptive phrasing that explains what changed and why. Vague messages (such as "updates", "fixed stuff", or single-word commits) are rejected. |
+| PR size | Pull Requests (PRs) must be kept tightly focused and small in scope, corresponding to a single GitHub issue or discrete requirement (e.g., 1–3 related files changed). Large, multi-feature "mega-PRs" that touch unrelated modules or refactor unassigned files are not permitted, ensuring reviewers can conduct thorough line-by-line diff inspections. |
+| Another-member review requirement | Self-reviewing and self-merging are strictly prohibited. Every PR must have at least one other group member formally assigned as a reviewer on GitHub. The reviewer must inspect the code diff, verify domain boundaries and test coverage, and complete an independent human evaluation before consulting any AI tools. |
+| Merge rule | A feature branch may only be merged into main after receiving explicit human approval on GitHub, resolving all review feedback, and confirming that all 16 new unit tests plus 8 baseline tests pass cleanly (python -m pytest). Once merged via GitHub, all team members must immediately switch to local main (git switch main), pull the updates (git pull), and re-run tests to confirm integrated verification. |
+| Significant Copilot disclosure rule | GitHub Copilot serves solely as an assistant for candidate code suggestions and review comparison, never as an autonomous merge authority. Any significant use of Copilot (for drafting code, unit tests, or PR critiques) must be explicitly disclosed in the PR description and recorded in the evidence file with prompt details, candidate outputs, and explicit Accept / Modify / Reject decisions backed by human reasoning. |
 
 ## F Issue and backlog index
 
@@ -184,7 +184,7 @@ Repeat per member. Include only categories that describe actual work; write not 
 
 Why is a high commit count not necessarily evidence of strong contribution?
 
-[response]
+Commit count is a misleading metric that can be easily inflated by artificial, micro-commits (e.g., fixing a single typo per commit) or artificially inflated commit activity.
 
 ## L Stage 6 formative questions
 
