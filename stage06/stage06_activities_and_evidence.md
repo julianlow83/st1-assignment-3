@@ -156,9 +156,9 @@ Repeat this block per PR. Record actual events, not planned approvals.
 - Linked issue closure: GitHub Issue #1 automatically closed via commit keyword
 - Each member updated main: Confirmed
 - Integrated verification after merge: 
-- Command: python -m pytest
-- Directory: project/
-- Observed Result: 18 passed in 0.11s
+  - Command: python -m pytest
+  - Directory: project/
+  - Observed Result: 18 passed in 0.11s
 - Integrated Code SHA: d6e81399469d88908e39746d2542d26e85f411a6
 
 ## H Copilot collaboration record
