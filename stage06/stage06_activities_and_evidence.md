@@ -213,7 +213,7 @@ Record meaningful required use, not every trivial completion. Repeat per signifi
 
 Repeat per member. Include only categories that describe actual work; write not applicable where appropriate. Pairing or mentoring can be supported by a short corroborated note.
 
-- Member: Julian
+- **Member: Julian**
 - Implementation: Stage 6
 - Testing: Authored 10 unit test cases in project/tests/test_services.py covering lookup success, unknown ID exceptions, and parameterized non-string input guards. *Evidence:* Executed python -m pytest tests/test_services.py
 - Review: N/A
@@ -223,7 +223,7 @@ Repeat per member. Include only categories that describe actual work; write not 
 - Documentation or team support: Worked on Stage 06 with Julian
 
 
-- Member: Labiba
+- **Member: Labiba**
 - Implementation: Stage 7
 - Testing: N/A (Worked on another other stage)
 - Review: N/A (Worked on another other stage)
@@ -233,7 +233,7 @@ Repeat per member. Include only categories that describe actual work; write not 
 - Documentation or team support: Wrked on Stage 07, while Julian and Tanika did Stage 06
 
 
-- Member: Tanika
+- **Member: Tanika**
 - Implementation: Stage 6 (with Julian)
 - Testing: N/A
 - Review: Performed peer review on Julian's Pull Request #1, flagging missing type hints in function signatures,
