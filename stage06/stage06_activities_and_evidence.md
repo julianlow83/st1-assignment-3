@@ -135,9 +135,8 @@ Repeat this block per PR. Record actual events, not planned approvals.
   3. AppointmentService.cancel_appointment(appointment_id): Transitions SCHEDULED appointments to CANCELLED, retains the appointment instance in current-session history, and rejects repeated cancellations or unknown IDs.
   4. Created 10 new unit test cases in project/tests/test_services.py
 - Meaningful commits: Implemented lookup and cancellation logic in project/smartcare/services.py
-  1. a1b2c3d — feat(services): implement patient and practitioner lookup methods
-  2. e4f5g6h — feat(services): implement cancel_appointment with retained history
-  3. i7j8k9l — test(services): add comprehensive unit test suite for Stage 6 service methods
+  1. 1cccef7338b17c9725bd62f1883947496779668a — first branch push for part D,E,F
+  2. f6a26b3e6bfe53a34ac2fe9fc05776f18228ffd7 — stage 6 and 7
 - Test command, directory and observed result:
   - Command: python -m pytest
   - Directory: project/
