@@ -140,9 +140,14 @@ class AppointmentService:
         Reject a blank or invalid ID with ValueError; do not create
         records.
         """
-        appointment = self.data_store.find_appointment(appointment_id)
+        if not isinstance(appointment_id, str) or not appointment_id.strip():
+            raise ValueError("Appointment ID must be a non-blank string.")
+
+        trimmed_id = appointment_id.strip()
+        appointment = self.data_store.find_appointment(trimmed_id)
         if appointment is None:
-            raise LookupError('Appointment not found')
+            raise LookupError(f"Appointment with ID '{trimmed_id}' not found.")
+
         return appointment
 
     def cancel_appointment(self, appointment_id: str) -> Appointment:
@@ -162,11 +167,7 @@ class AppointmentService:
         if appointment is None:
             raise LookupError(f"Appointment with ID '{trimmed_id}' not found.")
 
-        if appointment.status != AppointmentStatus.SCHEDULED:
-            raise ValueError(
-                f"Cannot cancel appointment in status '{appointment.status.value}'."
-            )
-
+        # Execute the domain state transition on the stored instance
         appointment.cancel()
         return appointment
 
@@ -175,7 +176,7 @@ class AppointmentService:
         practitioner_id: str,
         status: AppointmentStatus | None = None,
     ) -> list[Appointment]:
-        """Stage 9: new ordered list; default includes every status.
+        """New ordered list; default includes every status.
 
         Unknown practitioner raises LookupError, invalid status
         ValueError; a known practitioner with no matches returns an
