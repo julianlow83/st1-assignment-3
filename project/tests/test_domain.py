@@ -41,9 +41,8 @@ def test_blank_patient_name_rejected(invalid_name):
         Patient("P101", invalid_name)
 
 
-# ============================================================================
+
 # Practitioner Domain Tests (FR-03 / Revision 2 Validation)
-# ============================================================================
 
 def test_practitioner_construction_and_validation():
     """
@@ -65,9 +64,8 @@ def test_blank_practitioner_id_rejected(invalid_id):
         Practitioner(invalid_id, "Dr. John Doe", "Cardiology")
 
 
-# ============================================================================
+
 # Appointment Domain Tests (TEST-FR02-01, TEST-FR05-01, TEST-FR06-01, TEST-FR07-07)
-# ============================================================================
 
 def test_appointment_initial_status():
     """
