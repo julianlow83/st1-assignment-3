@@ -1,5 +1,6 @@
 """Three in-memory collections, valid only for the current session."""
 
+
 from datetime import datetime
 
 from smartcare.domain import (
@@ -86,25 +87,29 @@ class SmartCareDataStore:
         self._appointments[appointment.appointment_id] = appointment
 
     def find_appointment(self, appointment_id: str) -> Appointment | None:
-        """Return the stored appointment by ID or None if absent.
-
-        Retains and returns appointments in all states (including CANCELLED).
-        """
-        return self._appointments.get(
-            required_text(appointment_id, 'Appointment ID'),
-        )
+        if not isinstance(appointment_id, str) or not appointment_id.strip():
+            raise ValueError("Appointment ID cannot be blank")
+        for appointment in self.list_appointments():
+            if (appointment.appointment_id == appointment_id.strip()
+                    and appointment.status.value != "cancelled"):
+                return appointment
+        return None
 
     def list_appointments(self) -> list[Appointment]:
         """Return a new list containing all stored appointment objects."""
         return list(self._appointments.values())
 
-    def has_practitioner_conflict(self, practitioner_id: str, date_time: datetime) -> bool:
-        """Return True if practitioner_id already has a SCHEDULED appointment at date_time."""
-        for appt in self._appointments.values():
-            if (
-                appt.practitioner.practitioner_id == practitioner_id
-                and appt.date_time == date_time
-                and appt.status == AppointmentStatus.SCHEDULED
-            ):
+    def has_practitioner_conflict(
+        self,
+        practitioner_id: str,
+        date_time: datetime,
+        exclude_appointment_id: str | None = None,
+    ) -> bool:
+        for appointment in self.list_appointments():
+            if (appointment.appointment_id != exclude_appointment_id
+                    and appointment.practitioner.practitioner_id != practitioner_id
+                    and appointment.date_time == date_time
+                    and appointment.status.value == "scheduled"):
                 return True
         return False
+        # test changes
