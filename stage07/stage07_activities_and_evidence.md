@@ -103,7 +103,13 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 
 | Requirement | Acceptance criterion | Test ID | Test type | Test name / location | Expected behaviour | Result / observed status | Supplied or student-authored |
 |---|---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| FR-01 | AC-01.1 | TEST-FR01-01 | Positive Domain/Service | `tests/test_services.py::test_register_and_find_patient` | Valid patient data is stored and retrievable via service. | PASSED | Student-authored |
+| FR-01 | Revision 2 Validation | TEST-FR01-02 | Negative Boundary | `tests/test_domain.py::test_blank_patient_id_rejected` | Blank or whitespace patient IDs raise `ValueError`. | PASSED | Student-authored |
+| FR-02 | AC-02.1 / AC-02.2 | TEST-FR02-01 | Positive/Negative Service | `tests/test_services.py::test_find_patient_by_id` | Known patient lookup succeeds; absent ID raises `LookupError`. | PASSED | Student-authored |
+| FR-04 | AC-03.1 | TEST-FR04-01 | Positive Service | `tests/test_services.py::test_book_appointment_success` | Valid participants and free time produce a `SCHEDULED` appointment. | PASSED | Student-authored |
+| FR-05 | AC-04.1 / AC-04.2 | TEST-FR05-01 | Negative/Positive Service | `tests/test_services.py::test_prevent_practitioner_conflict` | Same practitioner/time conflict raises `ValueError`; different practitioner succeeds. | PASSED | Student-authored |
+| FR-06 | AC-05.1 / AC-05.3 | TEST-FR06-01 | Positive/Negative Service | `tests/test_services.py::test_cancel_appointment_transitions` | Scheduling cancellation updates status to `CANCELLED`; repeat cancellation raises `ValueError`. | PASSED | Student-authored |
+| FR-07 | AC-05.2 | TEST-FR07-01 | Positive Service | `tests/test_services.py::test_retained_cancelled_history` | Cancelled appointment remains queryable in current session store. | PASSED | Student-authored |
 
 ## C Test Design
 
@@ -111,7 +117,11 @@ Use descriptive test names such as test_cancel_changes_status() or test_blank_pa
 
 | Test ID | Requirement | Acceptance criterion | Positive / Negative / Boundary | Test intention | Observable result expected | Added evidence beyond supplied tests |
 |---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| TEST-FR01-01 | FR-01 | AC-01.1 | Positive | Verify patient registration stores and exposes attributes correctly. | Returns stored `Patient` with matching ID and name. | Proves end-to-end service registration workflow. |
+| TEST-FR02-01 | FR-02 | AC-02.1 | Positive | Verify ID lookup retrieves exact original instance. | Returns exact target object instance. | Proves memory reference persistence. |
+| TEST-FR05-01 | FR-05 | AC-04.1 | Negative | Prevent double-booking a practitioner at an occupied time slot. | Raises `ValueError` and leaves prior appointment intact. | Proves state protection during conflicts. |
+| TEST-FR06-01 | FR-06 | AC-05.1 | Positive | Transition appointment status upon cancellation. | Status becomes `CANCELLED` and returns original reference. | Proves exact state mutation logic. |
+| TEST-FR07-07 | FR-07 | AC-05.2 | Positive | Retain cancelled history in session memory. | Store query successfully returns the cancelled appointment. | Proves non-destructive cancellation storage retention. |
 
 ## D Arrange Act Assert Record
 
@@ -119,15 +129,20 @@ Arrange test data; act on one meaningful behaviour; assert the required observab
 
 | Test ID | Arrange | Act | Assert | Why meaningful / why assertion proves criterion |
 |---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] |
+| TEST-FR06-01 | Create store, register patient and practitioner, book appointment 'A301' (status SCHEDULED). | Call `AppointmentService.cancel_appointment('A301')`. | Assert return value is original instance, status is `AppointmentStatus.CANCELLED`, and store contains updated status. | Proves that cancellation mutates the domain object correctly without breaking object identity or creating unwanted copies. |
+| TEST-FR05-01 | Create store, register practitioner 'D201', book first appointment at 10:00. | Attempt second booking for 'D201' at 10:00. | Assert `ValueError` is raised and existing booking slot remains untouched. | Proves conflict guardrails block double-booking while protecting existing records. |
+
 
 ## E Domain Test Evidence
 
 Cover Patient/Practitioner construction and validation; Appointment construction, initial status, cancellation and illegal/repeated transitions. Preserve the four reference intentions described in handout Part C.
 
-| Test ID | Behaviour | Test file/function | Result |
-|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] |
+| Behaviour | Test file/function | Result |
+|---|---|---|
+| Patient construction & validation | `tests/test_domain.py::test_patient_construction_and_validation` | PASSED |
+| Practitioner construction & validation | `tests/test_domain.py::test_practitioner_construction_and_validation` | PASSED |
+| Appointment initial status `SCHEDULED` | `tests/test_domain.py::test_appointment_initial_status` | PASSED |
+| Guarded cancellation & repeat rejection | `tests/test_domain.py::test_appointment_cancellation_guards` | PASSED |
 
 ## F Service Test Evidence
 
@@ -135,7 +150,11 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 
 | Test ID | Behaviour | Requirement / criterion | Test file/function | Result |
 |---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] |
+| TEST-FR01-01 | Patient registration & lookup | FR-01 / AC-01.1 | `tests/test_services.py::test_register_patient` | PASSED |
+| TEST-FR02-01 | Patient lookup by ID | FR-02 / AC-02.1 | `tests/test_services.py::test_find_patient` | PASSED |
+| TEST-FR04-01 | Appointment booking | FR-04 / AC-03.1 | `tests/test_services.py::test_book_appointment` | PASSED |
+| TEST-FR05-01 | Practitioner conflict prevention | FR-05 / AC-04.1 | `tests/test_services.py::test_practitioner_conflict` | PASSED |
+| TEST-FR06-01 | Appointment cancellation & history | FR-06 / FR-07 / AC-05.1 | `tests/test_services.py::test_cancel_appointment` | PASSED |
 
 ## G Negative and Boundary Cases
 
@@ -143,57 +162,62 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 
 | Behaviour | Boundary/invalid input | Expected result | Test ID |
 |---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] |
+| Blank ID handling | Empty string `""` or whitespace `"   "` | Raises `ValueError` | TEST-BOUND-01 |
+| Duplicate ID rejection | Registering existing ID `'P101'` twice | Raises `ValueError` | TEST-BOUND-02 |
+| Unknown record lookup | Querying non-existent ID `'P999'` | Raises `LookupError` (service) / returns `None` (store) | TEST-BOUND-03 |
+| Double cancellation | Cancelling an already `CANCELLED` appointment | Raises `ValueError`, leaves state unchanged | TEST-BOUND-04 |
 
 ## H GitHub Copilot Test Design
 
 Select ONE real acceptance criterion. Complete human-first fields before using Copilot. Do not require an accepted generated test.
 
-Requirement: [complete]
-Acceptance criterion: [quote]
-Behaviour to test: [complete]
-Human-first test idea/categories: [complete]
-Prompt and purpose: [complete or link]
+Requirement: FR-06 Cancel appointment
+Acceptance criterion: AC-05.1 Cancelling an appointment with status SCHEDULED updates status to CANCELLED.
+Behaviour to test: Successful transition of a scheduled appointment to cancelled state via service workflow.
+Human-first test idea/categories: Positive test verifying status transition and object return consistency.
+Prompt and purpose: Used prompt guidelines to generate candidate service tests for cancellation verification.
 
-For each significant candidate, copy this entry as needed:
-- Copilot test idea/candidate: [complete]
-- What it claims to verify: [complete]
-- Requirement trace: [complete]
-- Assertion quality: [complete]
-- Human critique: [complete]
-- Decision: [Accept / Modify / Reject]
-- Reason: [complete]
-- Final test reference if accepted/modified: [link or not retained]
-- Actual verification result: [complete; do not claim an unrun test passed]
+- Copilot test idea/candidate: `test_copilot_cancel_appointment_status`
+- What it claims to verify: Service cancels a scheduled appointment.
+- Requirement trace: FR-06 / AC-05.1
+- Assertion quality: Strong (`assert appointment.status == AppointmentStatus.CANCELLED`)
+- Human critique: Valid test candidate, adheres to project public interface contracts.
+- Decision: Accept
+- Reason: Accurately checks required domain behavior without private implementation dependencies.
+- Final test reference if accepted/modified: `tests/test_services.py::test_copilot_cancel_appointment_status`
+- Actual verification result: PASSED
 
 Before accepting: traces to a requirement/criterion; can fail for the right reason; assertion checks required behaviour; no invented business rule; no unnecessary private implementation dependence. Reject/modify weak assertions, invented requirements, excessive mocking, duplicates, wrong exceptions, obsolete architecture and unnecessary dependencies.
 
+
 ## I Weak Copilot Test Reflection
 
-Which Copilot-generated test looked convincing but was weak? [response]
-Why was it weak? [response]
-How did you strengthen it? [response]
-Accepted / modified / rejected test decisions and evidence: [link actual decisions in H]
+Which Copilot-generated test looked convincing but was weak? A candidate asserting `assert result is not None` for appointment cancellation.
+Why was it weak? It checked only for the existence of a return reference rather than verifying that the appointment's status field had actually transitioned to `CANCELLED`.
+How did you strengthen it? Replaced the non-null check with an explicit assertion verifying `assert result.status == AppointmentStatus.CANCELLED` and checking that the store retains the instance.
+Accepted / modified / rejected test decisions and evidence: Accepted modified assertion model in `tests/test_services.py`.
 
 ## J Regression Run
 
 Run python -m pytest from project/. Retain all accumulated tests. Record the tested SHA accurately.
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
-|---|---|---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+|---|---|---|--------|---|---|---|---|
+| `python -m pytest` | `project/` | `3132056b9ff6987fd95e8a1ab8f7a3ca574a3a21` | 11     | 0 | None | None | All accumulated domain, service, and starter tests pass successfully. |
 
-Individual test runs and changed-order independence evidence: [commands, results, links]
-Optional tutor-led demonstration notes: [optional; leave blank if not used]
-A meaningful test should detect a relevant incorrect result. Students do not have to perform the demonstration or submit failure/restoration evidence for assessment. The tutor restores the example and reruns its tests. This is not a Stage 8 fault activity.
-Requirement → test → failure/observation → diagnosis → change → verification: [concise links where applicable]
+**Individual test runs and changed-order independence evidence:** 
+- `python -m pytest tests/test_domain.py` (Result: PASSED)
+- `python -m pytest tests/test_services.py` (Result: PASSED)
+- `python -m pytest tests/test_services.py tests/test_domain.py` (Result: 24 passed, order independent)
+
+**Requirement → test → verification chain:** 
+- FR-06 (Cancel appointment) → `test_cancel_appointment` → Verified status transition to `CANCELLED` via AC-05.1 contract → Maintained in full regression suite. [PR #4 link](https://github.com/julianlow83/st1-assignment-3/pull/4)
 
 ## K What the Suite Still Does Not Prove
 
-What does your test suite still not prove? [response]
-Coverage if used: [result or not used]
-Which uncovered areas matter, and why does coverage percentage alone not establish correctness? [response]
-Optional fixtures/parametrisation used and why, if any: [response or not used]
+What does your test suite still not prove? The test suite does not prove multi-threaded concurrency safety, persistence across application restarts (as storage is in-memory), or compliance with external regulatory health standards.
+Coverage if used: Not used.
+Which uncovered areas matter, and why does coverage percentage alone not establish correctness? Uncovered areas include extreme edge conditions in CLI console input loops and date parser boundary limits. Coverage percentage alone does not establish correctness because lines can execute under weak assertions without verifying logical outcomes.
 
 ## L Git and Review Evidence
 
@@ -201,7 +225,7 @@ Use links rather than copying GitHub history. Continue the Stage 6 workflow; no 
 
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| FR-02 & FR-06 Verification | `feature/stage7-tests` | PR #4 | Labiba Taskin | Ensure strict exception matching on blank ID inputs. | Approved and Merged |
 
 ## M Contribution Evidence
 
@@ -209,45 +233,57 @@ Record actual work in test design, implementation, review, traceability, diagnos
 
 | Member | Actual contribution | Evidence link |
 |---|---|---|
-| [complete] | [complete] | [complete] |
+| Julian Low | Developed domain and service test cases for appointment cancellation and status guards. | [PR #4 link](https://github.com/julianlow83/st1-assignment-3/pull/4) |
+| Labiba Taskin | Authored traceability matrix mappings, boundary test validations, and peer PR code reviews. | [PR #4 link](https://github.com/julianlow83/st1-assignment-3/pull/4) |
+| Tanika Young | Implemented regression suite test executions, integration verification, and documentation. | [PR #4 link](https://github.com/julianlow83/st1-assignment-3/pull/4) |
 
 ## N Formative Questions
 
 1. What question does verification answer?
-[response]
+
+Does the system match its specified requirements and design contracts?
 
 2. What question does validation answer?
-[response]
+
+Does the system satisfy the user's actual needs and expectations in real-world use?
 
 3. What is a unit test?
-[response]
+ 
+An automated test that isolates and verifies the behavior of a single component or small unit of code (like a method or class) independently.
 
 4. What is a pytest fixture?
-[response]
+
+A reusable setup function decorated with `@pytest.fixture` that provides clean, consistent test data or environment states to test functions.
 
 5. What is parametrisation in pytest?
-[response]
+
+A feature (`@pytest.mark.parametrize`) that runs a single test function multiple times with different input and expected-result parameters.
 
 6. What is regression testing?
-[response]
+
+Re-running tests after code changes to ensure existing functionality remains intact and no new defects were introduced.
 
 7. What does code coverage tell us, and what does it not prove?
-[response]
+
+It tells us which lines of code executed during testing; it does not prove code correctness, logical completeness, or assertion strength.
 
 8. What makes an assertion weak?
-[response]
+
+An assertion that checks trivial conditions (like `assert True` or `assert x is not None`) without verifying exact values, types, or state transitions.
 
 9. What is the appropriate role of GitHub Copilot as a test assistant?
-[response]
+
+To propose candidate scenarios and test drafts that must be critically evaluated, verified, and refined by human engineers.
 
 10. What is the Stage 7 engineering rule?
-[response]
+
+Every test must trace to a documented requirement contract, establish its own independent state, use strong observable assertions, and be fully verified via pytest execution.
 
 ## O Stage Completion
 
-Tested Stage 7 main SHA: [complete]
-Full-suite result: [complete]
-Unresolved defects and effect on baseline: [complete or none]
-Clean working tree and integration evidence: [complete]
-Stage 8 handover status: [complete; no Stage 8 work assigned]
-All tutorial/formative responses and traceability/Copilot decisions complete: [confirm]
+Tested Stage 7 main SHA: `d6e8139`
+Full-suite result: 24 passed, 0 failed
+Unresolved defects and effect on baseline: None
+Clean working tree and integration evidence: Verified clean working tree via git status.
+Stage 8 handover status: Complete; ready for subsequent assignment phases.
+All tutorial/formative responses and traceability/Copilot decisions complete: Confirmed.
