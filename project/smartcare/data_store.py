@@ -74,11 +74,11 @@ class SmartCareDataStore:
         if appointment.appointment_id in self._appointments:
             raise ValueError('Appointment ID already exists')
         if self.find_patient(
-            appointment.patient.patient_id,
+                appointment.patient.patient_id,
         ) is not appointment.patient:
             raise ValueError('Patient must be registered in this data store')
         if self.find_practitioner(
-            appointment.practitioner.practitioner_id,
+                appointment.practitioner.practitioner_id,
         ) is not appointment.practitioner:
             raise ValueError(
                 'Practitioner must be registered in this data store',
@@ -86,29 +86,22 @@ class SmartCareDataStore:
         self._appointments[appointment.appointment_id] = appointment
 
     def find_appointment(self, appointment_id: str) -> Appointment | None:
-        """Return the stored appointment by ID or None if absent.
-
-        Fault F8-02 injected: Cancelled appointments are incorrectly filtered out.
-        """
-        appointment = self._appointments.get(
+        """Return the stored appointment by ID or None if absent."""
+        return self._appointments.get(
             required_text(appointment_id, 'Appointment ID'),
         )
-        # BUG (F8-02): Returns None if status is CANCELLED, violating FR-07 / AC-05.2
-        if appointment is not None and appointment.status == AppointmentStatus.CANCELLED:
-            return None
-        return appointment
 
     def list_appointments(self) -> list[Appointment]:
         """Return a new list containing all stored appointment objects."""
         return list(self._appointments.values())
 
     def has_practitioner_conflict(self, practitioner_id: str, date_time: datetime) -> bool:
-        """Return True if practitioner_id already has a SCHEDULED appointment at date_time.
-
-        Fault F8-01 injected: Checks only date_time across ALL practitioners instead of practitioner_id.
-        """
+        """Return True if practitioner_id already has a SCHEDULED appointment at date_time."""
         for appt in self._appointments.values():
-            # BUG (F8-01): Missing check for appt.practitioner.practitioner_id == practitioner_id
-            if appt.date_time == date_time and appt.status == AppointmentStatus.SCHEDULED:
-                return True  # Incorrectly blocks DIFFERENT practitioners at the same time
+            if (
+                    appt.practitioner.practitioner_id == practitioner_id
+                    and appt.date_time == date_time
+                    and appt.status == AppointmentStatus.SCHEDULED
+            ):
+                return True
         return False
