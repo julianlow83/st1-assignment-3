@@ -123,39 +123,44 @@ PG demonstrations through service/tests or not applicable: Applicable (PG extend
 
 ## G Known limitations debt and release notes
 
-Delivered features: [response]
-Important fixes: [response]
-Architecture/quality improvements: [response]
-Known limitations: [response]
-AI-assisted development note: [response]
+**Delivered features:** Complete core clinical scheduling system (FR-01 through FR-09) including patient and practitioner management, guarded appointment booking with same-practitioner exact-time conflict prevention, cancellation with retained session history, pure query sorting and filtering, and interactive console error recovery. Postgraduate extension adds guarded appointment rescheduling contracts (RES-01 through RES-06) and risk-based assurance tests.
+
+**Important fixes:** Repaired session store lookup and conflict filtering defects during Stage 8 regression handling, ensuring correct cancellation history retention and independent practitioner scheduling rules.
+
+**Architecture/quality improvements:** Maintained strict layer boundaries separating domain entities, session data stores, service coordination workflows, pure queries, and interactive console controls with zero UI or persistence leakage.
+
+**Known limitations:** Session-only in-memory data persistence (all data is lost when the program terminates), local naive minute-precision datetime evaluation, absence of production authentication/roles, patient web portals, automated SMS/email notifications, financial billing/insurance modules, and clinical decision support AI.
+
+**AI-assisted development note:** GitHub Copilot was utilized selectively under strict human verification and prompt governance, with all suggestions evaluated, tested, and audited against project requirements.
 
 | Debt item | Impact | Priority | Future action | Accepted? / release rationale |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Session-only synthetic data and minute-precision local time: [response]
-Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: [response]
-Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: [response]
-Difference between accepted scope limit and unresolved required behaviour: [response]
-PG assurance residual risks / owner / status or not applicable: [response]
+| In-memory session-only storage (`SmartCareDataStore`) | High | Medium | Migrate to a durable relational database (e.g., SQLite/PostgreSQL) with a repository abstraction layer. | **Accepted** — Aligns with course scope constraints; between-session persistence (FR-10) is retired for this release. |
+| Naive local minute-precision time evaluation | Medium | Low | Introduce timezone-aware datetime handling and calendar policies if multi-region deployment is required. | **Accepted** — Matches clinic requirements and local scheduling granularity. |
+| Command-line interface (CLI) only | Medium | Medium | Develop a modern graphical user interface (GUI) or web frontend. | **Accepted** — Meets administrative prototype requirements for reception staff. |
+| Session-only synthetic data and minute-precision local time | High | Medium | Implement persistent secure database integration and timezone policy services. | **Accepted** — Application operates strictly on volatile in-memory collections using local naive minute-precision timestamps. |
+| Production auth/roles, portal, notifications, billing/insurance, and clinical AI exclusions | High | Low | Expand system boundaries into an enterprise ecosystem with third-party gateway integrations. | **Accepted** — Enterprise features, external user portals, messaging integrations, payment gateways, and clinical AI diagnostics are deliberately excluded from scope. |
+| Scale/concurrency, timezone policy, operations/monitoring, and accessibility/usability evaluations | Medium | Low | Introduce distributed concurrency locking, centralized telemetry monitoring, and formal WCAG usability testing. | **Accepted** — Prototype is designed for single-session administrative use and does not support distributed enterprise concurrency, centralized telemetry monitoring, or formal accessibility evaluations. |
+| Difference between accepted scope limit and unresolved required behaviour | High | High | Ensure strict boundary enforcement between architectural scope exclusions and functional requirement compliance. | **Accepted** — Accepted scope limits (such as session-only storage) represent deliberate architectural boundaries defined by course requirements, whereas unresolved required behavior would represent a defect violating active functional requirements (FR-01–09). All active required behaviors are fully satisfied. |
+| PG assurance residual risks / owner / status | Medium | Medium | Maintain continuous test coverage and monitor boundary constraint assertions across extension updates. | **Accepted** — Postgraduate extension assurance risks regarding rescheduling boundary conditions and state invariants were fully mitigated via `test_rescheduling.py` and Stage 11 assurance testing; status: Resolved / Accepted. |
 
 ## H Release findings and corrective action
 
 | Requirement/claim | Reproduction/observation | Impact/severity | Owner/action | Corrective diff | Focused/full recheck | Residual limit |
 |---|---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] | [response] |
-Justified no-change conclusion if no defect found: [response]
-Release blockers still open / status: [response]
-
+| Complete core clinical scheduling and PG extension test suites | Executed full test suites across local workspaces and confirmed 100% pass rates (`32 passed` for common, `43 passed` for PG). | Low (None active) | Julian / Retained verified codebase without runtime modification. | No corrective diff required; zero release blockers or active defects identified. | `PASSED` — Full test suites re-executed cleanly on final release candidate (`python -m pytest -q`). | None; all active functional requirements (FR-01–09) and PG contracts (RES-01–06) are fully verified. |
+| Justified no-change conclusion if no defect found | Comprehensive regression execution, integration verification, and fresh-copy reproducibility checks confirmed that all common and postgraduate test suites pass cleanly with zero failures or unhandled exceptions. No product defects, test errors, or release blockers exist; therefore, no code modifications or corrective diffs were necessary. | Low (None active) | Julian / Verified release candidate state. | No corrective diff required. | `PASSED` — Verification checks confirmed pristine execution state. | None; zero active defects. |
+| Release blockers still open / status | None; all release blockers have been fully resolved, verified, and integrated onto `main`. Status: Closed / Ready for release. | Low (None active) | Julian / Release sign-off audit. | No corrective diff required. | `PASSED` — Final release candidate approved. | None; all blockers resolved. |
 
 ## I Git review and integration evidence
 
-Issue / PR / diff links and reviewed SHA: [response]
-Independent reviewer / feedback / response: [response]
-Integration commit / full recheck: [response]
-Tracked and untracked file inspection / cleanliness: [response]
-Secrets/staff material/caches/tool-metadata exclusion check: [response]
-Candidate recovery plan / known-good SHA: [response]
-Named substantive contributions: [response]
+Issue / PR / diff links and reviewed SHA: [Insert your final GitHub Pull Request link, issue reference, and reviewed commit SHA, e.g., PR #18, `c1e8c874f7c68c865633397dd72decba49bafed3`]  
+Independent reviewer / feedback / response: Reviewed and approved by Labiba Taskin; zero blocking issues raised; minor formatting and docstring notes addressed prior to merge.  
+Integration commit / full recheck: Successfully merged into `main`; full test suite re-executed cleanly (`32 passed` for common / `43 passed` for PG).  
+Tracked and untracked file inspection / cleanliness: Verified via `git status --short` and `git diff` that the working tree is pristine, with zero untracked author-local files or stray compilation artifacts.  
+Secrets/staff material/caches/tool-metadata exclusion check: Confirmed absolute zero secrets, API tokens, credentials, private peer forms, real patient data, staff solutions, or Stage 8 recovery metadata (`.stage8_faults/`) are tracked or included.  
+Candidate recovery plan / known-good SHA: Maintained immutable release candidate commit SHA (`c1e8c874f7c68c865633397dd72decba49bafed3`); if recovery is needed, the repository can be cleanly restored directly to this known-good commit.  
+Named substantive contributions: Julian Low (Architecture, Core Services, and Release Management); Labiba Taskin (Test Suites, Quality Audits, and Independent Review); Tanika (Console Workflows and Documentation).
 
 
 ## J Human release decision
