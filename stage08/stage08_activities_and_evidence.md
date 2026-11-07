@@ -315,27 +315,6 @@ Use the full handout prompt separately for BOTH defects, after E. Keep each actu
 - **Before result:** see G, full passing suite (`26 passed in 0.14s`).
 
 - **Actual change / diff / separate refactor SHA:** `[5a190cf06e9d7ae33aac676c1a6d99d05be63eb4]`
-  ```python
-  # Refactored helper and lookup methods in project/smartcare/data_store.py
-  def _get_validated_id(self, entity_id: str, field_name: str) -> str:
-      """Helper to validate and trim entity IDs consistently."""
-      return required_text(entity_id, field_name)
-
-  def find_patient(self, patient_id: str) -> Patient | None:
-      """Return the stored patient or None; reject blank IDs with ValueError."""
-      return self._patients.get(self._get_validated_id(patient_id, 'Patient ID'))
-
-  def find_practitioner(self, practitioner_id: str) -> Practitioner | None:
-      """Return the stored practitioner or None; reject blank IDs with ValueError."""
-      return self._practitioners.get(
-          self._get_validated_id(practitioner_id, 'Practitioner ID'),
-      )
-
-  def find_appointment(self, appointment_id: str) -> Appointment | None:
-      """Return the stored appointment or None; reject blank IDs with ValueError."""
-      return self._appointments.get(
-          self._get_validated_id(appointment_id, 'Appointment ID'),
-      )
 
 ## I. Git, human review and integration
 
