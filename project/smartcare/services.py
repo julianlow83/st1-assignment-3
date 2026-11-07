@@ -171,6 +171,36 @@ class AppointmentService:
         appointment.cancel()
         return appointment
 
+    def reschedule_appointment(
+            self, appointment_id: str, new_date_time: datetime
+    ) -> Appointment:
+        """Reschedule a known SCHEDULED appointment to a new date_time.
+
+        Raise LookupError if unknown ID; raise ValueError for blank/invalid IDs,
+        invalid datetimes, terminal statuses, or practitioner conflicts.
+        """
+        if not isinstance(appointment_id, str) or not appointment_id.strip():
+            raise ValueError("Appointment ID must be a non-blank string.")
+
+        trimmed_id = appointment_id.strip()
+        appointment = self.data_store.find_appointment(trimmed_id)
+        if appointment is None:
+            raise LookupError(f"Appointment with ID '{trimmed_id}' not found.")
+
+        # Check practitioner conflict using the existing data store helper with target exclusion
+        if self.data_store.has_practitioner_conflict(
+                appointment.practitioner.practitioner_id,
+                new_date_time,
+                exclude_appointment_id=appointment.appointment_id,
+        ):
+            raise ValueError(
+                "Practitioner already has a SCHEDULED appointment at the requested time"
+            )
+
+        # Delegate state update to the domain entity
+        appointment.reschedule(new_date_time)
+        return appointment
+
     def list_practitioner_appointments(
             self,
             practitioner_id: str,
