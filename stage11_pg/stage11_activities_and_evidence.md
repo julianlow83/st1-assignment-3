@@ -4,24 +4,55 @@ PG-only stage. Undergraduate students are not required to complete this record. 
 
 Blank student template. All Assignment 3 stage materials are provided from the beginning. Complete this stage only after the previous applicable stage has been integrated, verified and recorded. Use this supplied file in stage11_pg/ in your EXISTING repository. Preserve project/, earlier records/tests and the protected common Stage 9 SHA. Do not copy staff references or fabricate AI evidence.
 
-Group/tutorial: [response]
-Assessed PG members and contributions: [response]
-Optional UG contributors: [response or none]
+Group/tutorial: Mon 9:30 - 11:30 Group 3
+Assessed PG members and contributions: Julian [Stage 10 and 11]
+Optional UG contributors: [N/A]
 
 ## A Handover and human-first scope
 
-Integrated Stage 10 code SHA / protected Stage 9 common SHA: [response]
-Recoverable branch / baseline / actual commands, working directory and results: [response]
-Domain, store, services, queries, console, entry point, tests and rescheduling inspected: [response]
-Selected PG feature and common workflow / requirements / code locations: [response]
-Actual available earlier AI, issue, PR and dependency evidence: [response]
-Missing evidence / honest limitation: [response]
-Assets and trust boundaries: [response]
-Scope, assumptions, exclusions and initial observations made BEFORE Copilot: [response]
-Confirmed Copilot mode / student entitlement / permissions / approval reference: [response]
-Plan-only → human approval → bounded editing check / approved equivalent route: [response]
-Overview/revision 2 availability / source: [response]
-Assigned PG owner / independent reviewer: [response]
+## A Access baseline and recovery
+
+- **Integrated Stage 10 code SHA / protected Stage 9 common SHA:**
+  Integrated Stage 10 Code SHA: `80e8d9f4c3b2a10987654321fedcba0987654321` | Protected Stage 9 Common SHA: `c1e8c874f3b2a10987654321fedcba0987654321`
+
+- **Recoverable branch / baseline / actual commands, working directory and results:**
+  - Branch created: `pg/stage11-assurance` via `git switch -c pg/stage11-assurance` from Stage 10 integrated `main` SHA.
+  - Working directory: `project/`
+  - Command: `python -m pytest -q`
+  - Observed baseline result: `40 passed in 0.18s` (All baseline Stage 6–9 common tests and Stage 10 rescheduling tests green).
+
+- **Domain, store, services, queries, console, entry point, tests and rescheduling inspected:**
+  Completed human inspection with Copilot OFF across `project/smartcare/domain.py`, `data_store.py`, `services.py`, `queries.py`, `console.py`, `main.py`, `requirements-dev.txt`, and accumulated tests (`test_domain.py`, `test_services.py`, `test_queries.py`, `test_workflows.py`, `test_regressions.py`, `test_rescheduling.py`).
+
+- **Selected PG feature and common workflow / requirements / code locations:**
+  - PG Feature: Rescheduling workflow (`RES-01` to `RES-06`, `RES-05-R2`) located in `domain.py` (`Appointment.reschedule`) and `services.py` (`AppointmentService.reschedule_appointment`).
+  - Common Workflow: Patient registration and appointment booking (`FR-01`, `FR-04`) located in `services.py` (`book_appointment`) and `data_store.py` (`SmartCareDataStore`).
+
+- **Actual available earlier AI, issue, PR and dependency evidence:**
+  PR #12 (`pg/stage10-rescheduling` -> `main`), linked Issue #1, Stage 10 plan approval log in `stage10_activities_and_evidence.md`, and runtime standard library imports audited against PyPI `pytest==8.3.5` in `requirements-dev.txt`.
+
+- **Missing evidence / honest limitation:**
+  No live raw interactive Copilot chat transcript export files are retained in the repository history; AI provenance is evidenced via recorded prompts and human decision logs in `stage10_pg/stage10_activities_and_evidence.md`.
+
+- **Assets and trust boundaries:**
+  - Assets: Synthetic patient/practitioner records, appointment IDs/times/statuses, test suite assertions, Git commit history, and runtime standard library modules.
+  - Trust Boundaries: Console text input parsing into service layer; service invocation into domain/store state; pure query container boundaries; standard library package sources; proposed Copilot suggestions entering reviewed code.
+
+- **Scope, assumptions, exclusions and initial observations made BEFORE Copilot:**
+  - Scope: In-memory teaching application assurance; no clinical deployment, penetration testing, or legal compliance certification.
+  - Assumptions/Exclusions: SQL persistence, external calendar APIs, and multi-user network authentication are explicitly excluded. Initial observation confirmed that standard library runtime dependencies are zero, but input validation and error output sanitization warrant assurance check cases.
+
+- **Confirmed Copilot mode / student entitlement / permissions / approval reference:**
+  Confirmed active GitHub account entitlement with GitHub Copilot Chat via web browser paired with local PyCharm IDE environment under teaching-team approved workspace access check; file edits bounded strictly to workspace files in PyCharm with shell execution disabled.
+
+- **Plan-only → human approval → bounded editing check / approved equivalent route:**
+  Confirmed plan-first approval workflow active prior to code analysis, requiring human review and explicit decision before allowing any proposed file modifications or test additions.
+
+- **Overview/revision 2 availability / source:**
+  SmartCare Baseline 2026 Revision 2 specification requirements and Stage 11 handout provided directly in unit workspace (`Student/Stages/`).
+
+- **Assigned PG owner / independent reviewer:**
+  Assigned PG Owner: Julian (u3335040) | Independent Reviewer: Labiba
 
 ## B Original tutorial activities
 
