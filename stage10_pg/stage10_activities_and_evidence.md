@@ -43,59 +43,115 @@ Optional UG contributors: N/A (They are working on 12)
 ### B1 Rewrite the vague task
 
 “Improve SmartCare appointment scheduling.” Write your bounded goal, requirements, exclusions, constraints, acceptance criteria and Definition of Done: [response]
-Predicted changed files and human test intentions: [response]
+Predicted changed files and human test intentions:
+
+  * **Bounded Goal:** Extend the existing SmartCare in-memory application with guarded appointment rescheduling functionality by introducing typed domain and service methods without modifying existing participant objects or adding persistence layers.
+  * **Requirements:** Implement `Appointment.reschedule(new_date_time: datetime) -> None` and `AppointmentService.reschedule_appointment(appointment_id: str, new_date_time: datetime) -> Appointment` according to contracts `RES-01` to `RES-06`, enforcing `RES-05-R2` current-session visibility. Only `SCHEDULED` appointments can move; unknown IDs raise `LookupError`; blank/invalid inputs, terminal statuses (`CANCELLED`/`COMPLETED`), and same-practitioner datetime conflicts raise `ValueError` without state mutation. Self-exclusion permits valid same-time no-ops, and successful moves release the old time slot.
+  * **Exclusions:** Out of scope: SQL/database storage, file/restart persistence, third-party calendar libraries, notifications, billing, authentication, patient self-service, recurring appointments, CLI menu additions, and changes to `Patient`/`Practitioner` entity classes or history semantics.
+  * **Architecture Constraints:** Must reuse minute-precision naive `datetime` validation and `SmartCareDataStore.has_practitioner_conflict()` with `exclude_appointment_id`. Retain exact public signatures, exception types, type hints, docstrings, and session query sorting (`select_appointments` / `appointment_sort_key`).
+  * **Acceptance Criteria:** Satisfy `AC-RES-01` (valid move preserves object identity and updates time), `AC-RES-02` (unknown ID raises `LookupError`), `AC-RES-03` (same-practitioner conflict raises `ValueError`), `AC-RES-04` (different practitioner at same time allowed), `AC-RES-05` (`CANCELLED`/`COMPLETED` targets raise `ValueError`), and `AC-RES-06-R2` (lookups and listings in current session reflect the updated datetime).
+  * **Definition of Done:** Working code in `domain.py` and `services.py`; focused tests in `test_rescheduling.py`; all baseline and accumulated Stage 6–9 tests passing green; protected Stage 9 contracts unchanged; diff reviewed with zero unrelated changes; evidence record complete; and peer human approval recorded prior to merge.
+
+- **Predicted changed files and human test intentions:**
+
+  * **Predicted Changed Files:** `project/smartcare/domain.py`, `project/smartcare/services.py`, `project/tests/test_rescheduling.py`, `README.md`, and `stage10_pg/stage10_activities_and_evidence.md`.
+  * **Human Test Intentions:**
+    1. *Positive Move:* Verify moving a `SCHEDULED` appointment updates `_date_time`, returns the exact same object instance, and leaves participant identities unchanged (`AC-RES-01`).
+    2. *Unknown ID:* Verify non-existent appointment ID raises `LookupError` (`AC-RES-02`).
+    3. *Practitioner Conflict:* Verify moving to a slot occupied by the same practitioner raises `ValueError` (`AC-RES-03`).
+    4. *Different Practitioner:* Verify moving to a slot occupied by a different practitioner succeeds (`AC-RES-04`).
+    5. *Terminal State Guards:* Verify rescheduling `CANCELLED` or `COMPLETED` appointments raises `ValueError` without mutating state (`AC-RES-05`).
+    6. *Session Visibility & Freed Slot:* Verify `find_appointment` and `list_practitioner_appointments` reflect the new time in sorted order, and the old slot can be re-booked (`AC-RES-06-R2`).
+    7. *Boundary Checks:* Verify same-time self-exclusion no-op, invalid `datetime` inputs (aware timestamps, nonzero seconds/microseconds), and blank string IDs raise expected exceptions.
 
 ### B2 Judge every proposed plan step
 
 | Proposed step | Accept / Modify / Reject | Requirement evidence and reason |
 |---|---|---|
-| Redesign database schema | [response] | [response] |
-| Add notifications | [response] | [response] |
-| Introduce calendar library | [response] | [response] |
-| Modify Patient | [response] | [response] |
-| Add rescheduling | [response] | [response] |
-| Rewrite all tests | [response] | [response] |
+| Redesign database schema | **Reject** | Out of scope. The requirement explicitly forbids database/schema redesign, SQLite, or file/restart persistence. Persistence remains strictly session-only in memory using the existing `SmartCareDataStore`. |
+| Add notifications | **Reject** | Out of scope. Section 3 explicitly lists notifications and reminders as out-of-scope features that must not be added. |
+| Introduce calendar library | **Reject** | Out of scope. External calendar packages and third-party dependencies are explicitly forbidden. Native minute-precision `datetime` validation must be reused. |
+| Modify Patient | **Reject** | Violation of scope constraints. Unrelated participant behavior (`Patient`/`Practitioner`) must remain unchanged. Rescheduling alters appointment time only, preserving original patient and practitioner objects. |
+| Add rescheduling | **Modify** | Required feature scope, but step must be bounded. Modify to restrict implementation strictly to `Appointment.reschedule(new_date_time)` in `domain.py` and `AppointmentService.reschedule_appointment(...)` in `services.py`. Must reuse `SmartCareDataStore.has_practitioner_conflict()` with `exclude_appointment_id`. |
+| Rewrite all tests | **Reject** | Architecture and verification violation. Existing common tests (Stages 6–9) must be preserved intact. Only new, focused unit/integration assertions should be added in `project/tests/test_rescheduling.py`. |
 
 ### B3 Six proposed changes
 
 | File or action | Expected? | Review concern and evidence needed |
 |---|---|---|
-| Appointment in project/smartcare/domain.py | [response] | [response] |
-| project/smartcare/services.py | [response] | [response] |
-| Proposed sqlite_repository.py / schema change | [response] | [response] |
-| Patient fields in project/smartcare/domain.py | [response] | [response] |
-| requirements-dev.txt adds calendar package | [response] | [response] |
-| Existing appointment assertions weakened | [response] | [response] |
+| Appointment in project/smartcare/domain.py | **Expected** | Verify state change is bounded to `_date_time` and validated; confirm same-object identity, naive minute-precision datetime checks, and rejection of terminal statuses (`CANCELLED`/`COMPLETED`) without mutating state. Evidence needed: `test_rescheduling.py` unit assertions verifying object identity (`rescheduled is original`) and error raising. |
+| project/smartcare/services.py | **Expected** | Verify service coordination preserves conflict and identity contracts; confirm it looks up target, enforces `has_practitioner_conflict()` with `exclude_appointment_id`, and handles `LookupError`/`ValueError` without mutating domain entities or store records. Evidence needed: unit/integration test output for `reschedule_appointment()`. |
+| Proposed sqlite_repository.py / schema change | **Unexpected** | Verify zero storage or schema modification is introduced; current requirements prohibit SQL, SQLite, ORM, or restart persistence. Evidence needed: git status and diff inspection confirming no new persistence files or database imports are added. |
+| Patient fields in project/smartcare/domain.py | **Unexpected** | Verify no unrelated participant entity or behavior is altered; patient attributes and history must remain untouched. Evidence needed: git diff inspection confirming zero line changes to `Patient` or `Practitioner` classes. |
+| requirements-dev.txt adds calendar package | **Unexpected** | Verify no external calendar dependency is added; third-party packages are strictly out of scope, requiring standard Python `datetime` reuse. Evidence needed: `requirements-dev.txt` diff check showing zero added packages. |
+| Existing appointment assertions weakened | **Unexpected** | Verify existing test assertions are not relaxed (e.g., changing exact datetime checks to `assert is not None`); tests must rigorously establish required outcomes. Evidence needed: git diff of `tests/` showing zero modified assertions in baseline test files. |
 
-### B4 Approval gate
+### Activity 4 Approval gate and exit
 
-Agent says “All tests pass.” Give at least SIX distinct checks before approval.
-1. [response]
-2. [response]
-3. [response]
-4. [response]
-5. [response]
-6. [response]
-Additional checks if useful: [response]
+Agent says “All tests pass.” Give at least SIX distinct checks before approval:
+
+1. **Verify Line-by-Line Production Diff Scope:** Inspect `git diff` on `project/smartcare/domain.py` and `project/smartcare/services.py` to ensure changes are strictly bounded to `Appointment.reschedule` and `AppointmentService.reschedule_appointment`. Confirm no unrelated files, third-party imports, schema changes, or entity fields were modified.
+2. **Audit Test Assertion Rigor & Prevent Test Accommodation:** Check `project/tests/test_rescheduling.py` to ensure tests make strong assertions (e.g., verifying `updated.date_time == new_date_time`, object instance identity `rescheduled is original`, and exact exception types like `ValueError`/`LookupError`). Verify that the agent did not weaken existing assertions (e.g., changing exact equality checks to weak `is not None` assertions).
+3. **Verify Baseline Test Suite Preservation:** Execute `python -m pytest -q --ignore=tests/test_rescheduling.py` from `project/` to independently confirm that all baseline tests from Stages 6–9 remain 100% untouched and passing.
+4. **Verify State Non-Mutation on Failures:** Confirm that negative test cases explicitly assert that when a rescheduling request fails (due to unknown IDs, invalid datetimes, terminal statuses, or practitioner conflicts), all appointment attributes, participant references, and `SmartCareDataStore` collections remain completely unmutated.
+5. **Verify Self-Exclusion and Freed Slot Behaviour:** Confirm that test assertions explicitly verify that a valid same-time move for the same target appointment succeeds (self-exclusion no-op), and that successfully moving an appointment frees its original date/time slot so another appointment can occupy it.
+6. **Execute Independent Terminal Verification:** Run the complete test suite directly from the local terminal (`python -m pytest -q`) to observe genuine pass outputs and execution time rather than accepting the AI agent's textual claim that tests ran.
+
+Additional checks if useful:
+- **Session Visibility & Query Sorting:** Verify that `find_appointment` and `list_practitioner_appointments` in `project/smartcare/services.py` reflect updated appointment datetimes in current-session lookups and chronological listings (`RES-05-R2`) without requiring database reloads or cache flushes.
+- **Dependency & Secret Audit:** Check `git status --short` and project configuration files to ensure no third-party dependencies, API keys, credentials, or real patient data were added.
 
 ### B5 Exit question
 
-Why does increasing AI autonomy increase rather than decrease the importance of software engineering discipline? [response]
+**Why does increasing AI autonomy increase rather than decrease the importance of software engineering discipline?**
+
+As AI agents gain greater autonomy the primary engineering risk shifts from writing code to controlling scope, architecture, and verification. Highly autonomous agents can rapidly introduce speculative features, weaken test assertions to pass failing builds, refactor unrelated modules, or introduce subtle blast-radius side effects. Because an agent operates without intrinsic architectural intent or legal accountability, human software engineering becomes the essential safety net that prevents system degradation and guarantees software correctness.
 
 ## C Human task specification before AI
 
-- Goal: [response]
-- Requirements RES-01–06 with RES-05-R2: [response]
-- Out of scope: [response]
-- Architecture constraints: [response]
-- Acceptance criteria: [response]
-- Definition of Done: [response]
-- Issue / PG owner: [response]
-- Human expected positive, negative and boundary tests: [response]
-- Allowed files: [response]
-- Forbidden/unnecessary files and changes: [response]
-- Baseline/recovery link: [response]
-- Evidence that human analysis preceded agent use: [response]
+- **Goal:**
+  Extend the existing SmartCare in-memory application with guarded appointment rescheduling functionality by implementing typed domain and service methods while preserving participant object identities, existing data structures, and session state contracts.
+
+- **Requirements RES-01–06 with RES-05-R2:**
+  - **RES-01:** Reschedule a known `SCHEDULED` appointment to a valid free time.
+  - **RES-02:** Retain the existing appointment object instance, ID, patient, and practitioner identities; only update `_date_time`. The service returns that exact same object.
+  - **RES-03:** Valid unknown appointment IDs raise `LookupError`. Blank/invalid IDs raise `ValueError` under existing string validation contracts.
+  - **RES-04:** Reject another `SCHEDULED` appointment for the same practitioner at the exact new datetime with `ValueError`. Target appointment self-exclusion permits valid same-time no-ops; different practitioners at that datetime are allowed.
+  - **RES-05-R2:** Updated datetimes are immediately visible in subsequent session lookups and sorted listings.
+  - **RES-06:** Rescheduling `CANCELLED` or `COMPLETED` targets raises `ValueError` without mutating state, even for same-time requests. Successful moves release the original slot.
+
+- **Out of scope:**
+  SQL/database storage, file/restart persistence, third-party calendar packages, external dependencies, notifications/reminders, billing, authentication, patient self-service, recurring appointments, CLI menu additions, and changes to `Patient`/`Practitioner` entity classes or cancellation/history semantics.
+
+- **Architecture constraints:**
+  Must reuse minute-precision naive `datetime` validation and `SmartCareDataStore.has_practitioner_conflict()` with `exclude_appointment_id`. Preserve exact public class signatures, exception types, type hints, docstrings, and session query sorting logic (`select_appointments` / `appointment_sort_key`).
+
+- **Acceptance criteria:**
+  Satisfy `AC-RES-01` (valid move preserves object identity and changes time), `AC-RES-02` (unknown ID raises `LookupError`), `AC-RES-03` (same-practitioner conflict raises `ValueError`), `AC-RES-04` (different practitioner at same time allowed), `AC-RES-05` (`CANCELLED`/`COMPLETED` targets raise `ValueError`), and `AC-RES-06-R2` (lookups and listings in current session reflect updated time).
+
+- **Definition of Done:**
+  Working code in `domain.py` and `services.py`; focused test suite in `test_rescheduling.py`; all accumulated baseline tests (Stages 6–9) passing green; zero modification to protected Stage 9 contracts; production and test diffs reviewed line-by-line with no unrelated changes; AI contributions documented; and peer human approval recorded prior to merge.
+
+- **Issue / PG owner:**
+  Issue #1 (Guarded Appointment Rescheduling) / PG Owner: Julian Low (`@julianlow83`).
+
+- **Human expected positive, negative and boundary tests:**
+  - *Positive:* Valid move updates `_date_time`, returns identical object instance (`rescheduled is original`), preserves patient/practitioner references (`AC-RES-01`), and vacates original time slot.
+  - *Negative:* Non-existent appointment ID raises `LookupError` (`AC-RES-02`); same-practitioner scheduled conflict at new time raises `ValueError` (`AC-RES-03`); rescheduling `CANCELLED` or `COMPLETED` appointments raises `ValueError` (`AC-RES-05`); all failed attempts leave state completely unmutated.
+  - *Boundary:* Valid same-time self-exclusion no-op succeeds; timezone-aware datetimes, nonzero seconds/microseconds, wrong types, and blank string IDs raise `ValueError`; same-time booking for a different practitioner succeeds (`AC-RES-04`).
+
+- **Allowed files:**
+  `project/smartcare/domain.py`, `project/smartcare/services.py`, `project/tests/test_rescheduling.py`, `README.md`, and `stage10_pg/stage10_activities_and_evidence.md`.
+
+- **Forbidden/unnecessary files and changes:**
+  Forbidden: Any sqlite/database scripts, new third-party dependency files (`requirements.txt` changes), modifications to `Patient` or `Practitioner` entity classes, changes to `SmartCareDataStore` core collections, alterations to baseline test files (`tests/test_starter.py`, `tests/test_domain.py`, `tests/test_services.py`, `tests/test_queries.py`, `tests/test_workflows.py`), or GUI/console menu additions.
+
+- **Baseline/recovery link:**
+  - **Protected Stage 9 Common SHA:** c1e8c874f7c68c865633397dd72decba49bafed3
+  - **Recoverable Feature Branch:** `pg/stage10-rescheduling`
+
+- **Evidence that human analysis preceded agent use:**
+  Written task specification (Section B1–B3, Section C) completed and saved to Git before executing Copilot Agent prompt in Section 5. Copilot prompt includes strict plan-first constraint and file bounds.
 
 ## D Agent plan and approval
 
