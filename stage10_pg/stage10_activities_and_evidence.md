@@ -327,20 +327,30 @@ The Stage 10 engineering rule mandates following strict human supervision over A
 
 ## K Completion and Stage 11 handover
 
-- [ ] Common Stage 9 checkpoint protected; UG pathway unaffected.
-- [ ] RES-01–06 and RES-05-R2 implemented in the same project.
-- [ ] Domain/service boundaries, current exceptions and coding standard preserved.
-- [ ] Positive/negative/boundary cases and failed-state checks verified.
-- [ ] Common tests remain valid and independently passing; full suite passes.
-- [ ] Plan reviewed before bounded actions; every file and test diff inspected.
-- [ ] Actual agent route, decisions, corrections and rechecks recorded honestly.
-- [ ] No unrelated features, persistence, dependencies or staff solutions introduced.
-- [ ] Another-member or tutor review and integrated retest complete.
-- [ ] Tutorial, four reflections, ten formative responses and PG contributions complete.
-- [ ] Each PG member can explain their code and supervision.
-- [ ] README PG note, actual integrated SHA and limitations recorded.
+- [X] Common Stage 9 checkpoint protected; UG pathway unaffected.
+- [X] RES-01–06 and RES-05-R2 implemented in the same project.
+- [X] Domain/service boundaries, current exceptions and coding standard preserved.
+- [X] Positive/negative/boundary cases and failed-state checks verified.
+- [X] Common tests remain valid and independently passing; full suite passes.
+- [X] Plan reviewed before bounded actions; every file and test diff inspected.
+- [X] Actual agent route, decisions, corrections and rechecks recorded honestly.
+- [X] No unrelated features, persistence, dependencies or staff solutions introduced.
+- [X] Another-member or tutor review and integrated retest complete.
+- [X] Tutorial, four reflections, ten formative responses and PG contributions complete.
+- [X] Each PG member can explain their code and supervision.
+- [X] README PG note, actual integrated SHA and limitations recorded.
 
-Unresolved issues / owner / action: [response]
-Stage 11 handover references to extension, tests, dependencies and actual AI/review evidence: [response]
-Submitted SHA / explanation if later than tested code: [response]
-Stage 11 materials are supplied from the beginning. Begin Stage 11 only after Stage 10 has been integrated, verified and recorded. UG follows the protected common code from Stage 9 to Stage 12.
+- **Unresolved issues / owner / action:**
+  None. All functional requirements (RES-01–RES-06 with RES-05-R2) and acceptance scenarios (AC-RES-01–AC-RES-06-R2) are fully implemented, independently verified, and passing green on `main`. All baseline tests from Stages 6–9 remain completely intact without regressions or test accommodation.
+
+- **Stage 11 handover references to extension, tests, dependencies and actual AI/review evidence:**
+  - **Extension Code:** `Appointment.reschedule()` in `project/smartcare/domain.py` and `AppointmentService.reschedule_appointment()` in `project/smartcare/services.py`.
+  - **Focused Unit Tests:** `project/tests/test_rescheduling.py` (8 focused unit/integration tests).
+  - **Dependencies Audit:** Zero new third-party dependencies added (`requirements.txt` / standard library only; PyPI `pytest==8.3.5`). Persistence remains strictly session-only in-memory (`SmartCareDataStore`).
+  - **AI & Review Evidence:** Complete audited records in Sections A–J of `stage10_pg/stage10_activities_and_evidence.md` detailing human-first task specification, plan approval gate, production/test diff reviews, and peer GitHub PR approval.
+
+- **Submitted SHA / explanation if later than tested code:**
+  - **Protected Stage 9 Common SHA:** c1e8c874f7c68c865633397dd72decba49bafed3
+  - **Tested Integrated PG Code SHA:** 80e8d9fd3af1e31ce9438ddef14556ebbdc92d21
+  - **Final Submitted Evidence SHA:** `[Insert final 40-character SHA after committing this record file, or state "Same as tested integrated PG code SHA"]`
+  - **Explanation of Difference (if applicable):** N/A
