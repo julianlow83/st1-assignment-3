@@ -80,28 +80,6 @@ Stable demo owner / fresh process / command: Julian / Fresh terminal process / `
 
 PG demonstrations through service/tests or not applicable: Applicable (PG extended checks executed via `python -m pytest` / UG-only groups write "Not applicable")
 
-
-## E Final code quality and AI review
-
-| Review area | Code/evidence location | Finding or no finding | Correction/no change and recheck |
-|---|---|---|---|
-| OOP responsibilities and pure-query boundaries | [response] | [response] | [response] |
-| PascalCase and snake_case naming | [response] | [response] | [response] |
-| Useful type hints and meaningful docstrings | [response] | [response] | [response] |
-| Four-space indentation and imports/layout | [response] | [response] | [response] |
-| Focused methods / duplication / dead or commented code | [response] | [response] | [response] |
-| Globals / leakage / unnecessary inheritance or frameworks | [response] | [response] | [response] |
-| No SQLite/persistence/repository ABCs/speculative features | [response] | [response] | [response] |
-| Synthetic data / secrets / dependencies / provenance | [response] | [response] | [response] |
-| Significant common Copilot contributions and human verification | [response] | [response] | [response] |
-| PG plan/diff/test approvals and Stage 11 VERIFY/TRUST | [response] | [response] | [response] |
-
-| AI claim | Affected requirement/code | Human check | Accept/Modify/Reject and reason | Actual outcome/action or no change |
-|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Access route or approved equivalent / limitations: [response]
-Available AI evidence and missing evidence honestly disclosed: [response]
-
 ## E Final code quality and AI review
 
 | Review area | Code/evidence location | Finding or no finding | Correction/no change and recheck |
