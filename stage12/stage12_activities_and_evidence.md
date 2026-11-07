@@ -9,7 +9,7 @@ Members and UG/PG applicability: 3 [2 UG / 1 PG]
 
 **Release label/version and requirements baseline:** `v1.0-release` (SmartCare A3 Requirements Baseline 2026 Revision 2; Common FR-01–09, QRY-01–04, FP-01–03, UI-01–02; PG extended RES-01–06 and assurance suite)  
 
-**Common starting SHA / branch / applicable members:** c1e8c874f7c68c865633397dd72decba49bafed3 / `main` / Labiba, Tanika  
+**Common starting SHA / branch / applicable members:** a8740f759f5ea75d33bc8f08d26e646208725f94 / `main` / Labiba, Tanika  
 
 **PG starting SHA / branch / applicable members or not applicable:** b6d09324734c9c1fee85e3d920c875cbb0b071a1 / `main` / Julian  
 
@@ -45,7 +45,7 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 
 | Suite/scope | Environment/version | Working directory and command | Tested SHA | Actual result | Evidence link |
 |---|---|---|---|---|---|
-| Complete common | Python 3.13, pytest 8.3.5 | `project/` | `c1e8c874f7c68c865633397dd72decba49bafed3` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` (`SHA: [Insert SHA]`) |
+| Complete common | Python 3.13, pytest 8.3.5 | `project/` | `a8740f759f5ea75d33bc8f08d26e646208725f94` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` (`SHA: [Insert SHA]`) |
 | Complete PG if applicable | Python 3.13, pytest 8.3.5 | `project/` | `b6d09324734c9c1fee85e3d920c875cbb0b071a1` | `43 passed in 0.21s` — All common tests plus PG rescheduling (`test_rescheduling.py`) and assurance (`test_assurance.py`) tests passed successfully. | `project/tests/` (`SHA: [Insert SHA]`) |
 | Affected focused checks after correction | Python 3.13, pytest 8.3.5 | `project/` | `Same as common/PG release SHA` | `PASSED` — Focused regression and workflow checks verified post-correction without side effects. | `project/tests/` (`SHA: [Insert SHA]`) |
 | Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | `[Insert Submitted SHA]` | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` (`SHA: [Insert SHA]`) |
@@ -154,13 +154,19 @@ PG demonstrations through service/tests or not applicable: Applicable (PG extend
 
 ## I Git review and integration evidence
 
-Issue / PR / diff links and reviewed SHA: [Insert your final GitHub Pull Request link, issue reference, and reviewed commit SHA, e.g., PR #18, `c1e8c874f7c68c865633397dd72decba49bafed3`]  
-Independent reviewer / feedback / response: Reviewed and approved by Labiba Taskin; zero blocking issues raised; minor formatting and docstring notes addressed prior to merge.  
-Integration commit / full recheck: Successfully merged into `main`; full test suite re-executed cleanly (`32 passed` for common / `43 passed` for PG).  
-Tracked and untracked file inspection / cleanliness: Verified via `git status --short` and `git diff` that the working tree is pristine, with zero untracked author-local files or stray compilation artifacts.  
-Secrets/staff material/caches/tool-metadata exclusion check: Confirmed absolute zero secrets, API tokens, credentials, private peer forms, real patient data, staff solutions, or Stage 8 recovery metadata (`.stage8_faults/`) are tracked or included.  
-Candidate recovery plan / known-good SHA: Maintained immutable release candidate commit SHA (`c1e8c874f7c68c865633397dd72decba49bafed3`); if recovery is needed, the repository can be cleanly restored directly to this known-good commit.  
-Named substantive contributions: Julian Low (Architecture, Core Services, and Release Management); Labiba Taskin (Test Suites, Quality Audits, and Independent Review); Tanika (Console Workflows and Documentation).
+**Issue / PR / diff links and reviewed SHA:** [PR #18 / a8740f759f5ea75d33bc8f08d26e646208725f94] 
+
+**Independent reviewer / feedback / response:** PR self-approved due to the deadline approaching and the late hours, but Labiba and Tanika reviwed afterword; no issues raised
+
+**Integration commit / full recheck:** Successfully merged into `main`; full test suite re-executed cleanly (44 passed in 0.21s).  
+
+**Tracked and untracked file inspection / cleanliness:** Verified via `git status --short` and `git diff` that the working tree is pristine, with zero untracked author-local files or stray compilation artifacts.  
+
+**Secrets/staff material/caches/tool-metadata exclusion check:** Confirmed absolute zero secrets, API tokens, credentials, private peer forms, real patient data, staff solutions, or Stage 8 recovery metadata (`.stage8_faults/`) are tracked or included.  
+
+**Candidate recovery plan / known-good SHA:** Maintained immutable release candidate commit SHA (a8740f759f5ea75d33bc8f08d26e646208725f94); if recovery is needed, the repository can be cleanly restored directly to this known-good commit.  
+
+**Named substantive contributions:** Julian (Architecture, Core Services, and Release Management); Tanika(Test Suites, Quality Audits, and Independent Review); Labiba (Console Workflows and Documentation).
 
 
 ## J Human release decision
