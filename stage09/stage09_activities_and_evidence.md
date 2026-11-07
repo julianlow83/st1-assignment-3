@@ -219,24 +219,39 @@ Domain entities (`Appointment`, `Patient`, `Practitioner`) own internal state va
 
 10. **How do pure functions and OOP responsibilities work together?**
     Object-Oriented domain entities (`Appointment`, `SmartCareDataStore`) own state representation, invariant validation, and guarded state transitions. Pure functional queries (`queries.py`) operate on top of domain object snapshots to perform side-effect-free selection, filtering, and sorting. Application services (`services.py`) orchestrate state retrieval and delegate processing to pure queries without mixing interaction logic into domain models.
+    
 ## H. Review, completion and common handover
 
-Issues and bounded branches: <!-- links -->
-PR/diff and another-member human reviewer: <!-- actual links/name -->
-Review responses and Copilot comparison: <!-- links -->
-Integrated common Stage 9 SHA: <!-- complete -->
-Full regression command, working directory, actual count/result and evidence: <!-- complete -->
-README run instructions and scope/limitations: <!-- link -->
-Unresolved issues and support/action: <!-- complete -->
-UG common candidate / PG future branch plan: <!-- complete -->
+**Issues and bounded branches:** N/A
+**PR/diff and another-member human reviewer:** https://github.com/julianlow83/st1-assignment-3/pull/15 [reviewed by Julian]
 
-- [ ] Query contracts, purity, new lists and named-key ordering verified.
-- [ ] Service empty/unknown/invalid cases and cancellation history verified.
-- [ ] Every console command and invalid-input recovery demonstrated.
-- [ ] Query and workflow tests plus all previous tests pass; actual evidence linked.
-- [ ] Human design, Copilot critique, review and integration recorded honestly.
-- [ ] Reflections and ten formative responses completed.
-- [ ] README updated; earlier code/tests/records preserved.
-- [ ] Common SHA protected for UG Stage 12; PG Stage 10/11 work deferred until approved.
+**Review responses and Copilot comparison:**
+- Copilot proposed strategy pattern classes; human decision: **Rejected** as over-engineering in favor of pure functions.
+- Reviewer was happy with Labiba's changes to the files, verified boundary separation (`queries.py` pure functions, `services.py` lookup validation, `console.py` error recovery).
+- No comments to resolve prior to approval, PR was merged
+
+**Integrated common Stage 9 SHA:** fa41b389eda787d68f27ef6b6306b748737941ac
+
+**Full regression command, working directory, actual count/result and evidence:**
+- Command: `python -m pytest -q`
+- Working Directory: `project/`
+- Actual Result: `32 passed in 0.15s` — All starter, domain, service, query, and workflow tests passed cleanly.
+  
+**README run instructions and scope/limitations:**
+- README Reference: [https://github.com/julianlow83/st1-assignment-3/blob/main/README.md]
+- Scope/Limitations: Session-only in-memory storage (FR-10 database persistence retired). Validated interactive menu handles `ValueError` and `LookupError` without crashing.
+
+**Unresolved issues and support/action:** All functional requirements, queries, menu items, and workflow assertions are fully integrated and passing on `main`.  
+
+**UG common candidate / PG future branch plan:** Julian branches from this common Stage 9 SHA onto `Stage 10 agentic rescheduling without altering common scope.
+
+- [X] Query contracts, purity, new lists and named-key ordering verified.
+- [X] Service empty/unknown/invalid cases and cancellation history verified.
+- [X] Every console command and invalid-input recovery demonstrated.
+- [X] Query and workflow tests plus all previous tests pass; actual evidence linked.
+- [X] Human design, Copilot critique, review and integration recorded honestly.
+- [X] Reflections and ten formative responses completed.
+- [X] README updated; earlier code/tests/records preserved.
+- [X] Common SHA protected for UG Stage 12; PG Stage 10/11 work deferred until approved.
 
 No persistence, rescheduling or assurance implementation is part of Stage 9. UG: 6→7→8→9→12. PG: 6→7→8→9→10→11→12. Mixed groups keep one repository and protect the common candidate.
