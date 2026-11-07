@@ -193,10 +193,15 @@ Unified decision. Both undergraduate (UG) and postgraduate (PG) scopes are fully
 ## K Final tested release SHA
 
 Exact common tested SHA: [a8740f759f5ea75d33bc8f08d26e646208725f94]
+
 Exact PG tested SHA or not applicable: [b6d09324734c9c1fee85e3d920c875cbb0b071a1]
+
 Final submitted SHA / repository URL: TBA
+
 Evidence-only later commit and difference explanation: N/A
+
 Executable changes after testing and re-verification: N/A
+
 Source ZIP name / SHA correspondence / extracted comparison: TBA
 
 
@@ -260,36 +265,64 @@ The main course conclusion is that while AI tools can assist with drafting code 
 
 ## N Reflection viva and handover
 
-Strongest evidence SmartCare is ready: [response]
-Weakest area: [response]
-How AI use changed from Stage 1 to Stage 12: [response]
-Start doing — engineering and AI use: [response]
-Stop doing — engineering and AI use: [response]
-Continue doing — engineering and AI use: [response]
-What worked / caused rework / future delivery improvement: [response]
-One paragraph — If AI can write code why do we still need software engineers: [response]
+**Strongest evidence SmartCare is ready:**
+The most robust evidence of system readiness is our comprehensive regression test suite, which passes $100\%$ cleanly across both common and postgraduate scopes ($32$ common tests and $43$ cumulative tests passed in under 0.25 seconds). Furthermore, our fresh-clone reproducibility checks and end-to-end interactive terminal demonstrations confirm that all functional requirements (FR-01 through FR-09), query listings (QRY-01–04), and PG rescheduling contracts (RES-01–06) operate reliably without unhandled exceptions or data corruption.
+
+**Weakest area:**
+Our primary limitation is the volatile, session-only in-memory data store (SmartCareDataStore). Because all patient, practitioner, and appointment records are held purely in volatile memory collections, every piece of data is permanently discarded when the program terminates. While this complies with the retired persistence scope ($\text{FR-10}$), it restricts the application to single-session administrative use without durable database persistence.
+
+**How AI use changed from Stage 1 to Stage 12:**
+Early in Assignment 2, our use of Copilot was less structured, occasionally treating generated suggestions as ready-to-merge code. By the later stages—particularly during Stage 10 agentic rescheduling and Stage 11 responsible AI assurance, we were using mandatory plan-only prompting, line-by-line responsibility auditing, and independent test verification before accepting any AI-assisted contribution.
+
+**Start doing — engineering and AI use:**
+Enforce a mandatory "plan-first, code-second" workflow for all complex features, ensuring that requirements and edge cases are fully mapped out before inviting AI assistance.
+
+**Stop doing — engineering and AI use:**
+Stop accepting AI-suggested code blocks or test assertions on blind faith without independently verifying their underlying logic and error boundaries.
+
+**Continue doing — engineering and AI use:**
+Maintain strict adherence to the Arrange-Act-Assert (AAA) testing pattern, rigorous peer code review via GitHub Pull Requests, clean architectural layer boundaries, and the preservation of immutable Git history.
+
+**What worked / caused rework / future delivery improvement:** 
+
+- **Worked:** Decoupling pure data processing (queries) from mutable service orchestration and domain logic significantly simplified unit testing and prevented side-effect bugs.
+
+- **Caused rework:** Initial misunderstandings around query tie-breaking sorting keys and exact-time practitioner conflict guards required refactoring during Stage 8 and 9.
+
+- **Future improvement:** Establishing stricter interface agreements earlier in the project lifecycle would reduce integration friction between services and console input handlers.
+
+**One paragraph — If AI can write code why do we still need software engineers:**
+While AI tools excel at drafting boilerplate syntax, generating initial test ideas, or accelerating repetitive typing, they lack contextual judgment, ethical responsibility, and structural understanding. Software engineers are fundamentally required to design secure architectures, enforce privacy and data minimisation rules, audit supply-chain dependencies, evaluate trade-offs, and—most importantly—take professional accountability for the safety, correctness, and reliability of deployed systems.
 
 | Preparation item | Own explanation and evidence link |
 |---|---|
-| Problem and stakeholders | [response] |
-| Two requirements and acceptance criteria | [response] |
-| Domain model and architecture | [response] |
-| Design trade-off | [response] |
-| Meaningful test and its limits / 100 percent coverage | [response] |
-| Diagnosed defect and verification | [response] |
-| Shared store and session-state/query responsibilities | [response] |
-| What would break if session-state lookup/query responsibilities changed? | [response] |
-| Why cancellation is domain behaviour / conflict coordination is service behaviour | [response] |
-| FR-07 retained history test | [response] |
-| Actual AI change rejected/modified or honestly accepted with verification | [response] |
-| Unresolved limitation / future production work | [response] |
-| Personal implementation contribution | [response] |
-| Personal test/review/design/integration contribution | [response] |
-| PG agentic change and rescheduling verification | [response] |
-| PG responsible-AI risk/remediation or supported no finding | [response] |
+| Problem and stakeholders | The system provides an in-memory administrative scheduling tool for clinic reception staff (stakeholders) to manage patient and practitioner registrations, book and cancel appointments, prevent scheduling conflicts, and list practitioner schedules. [project/smartcare/console.py] |
+| Two requirements and acceptance criteria | FR-01 (Patient Registration): Storing valid required patient data with an unused ID (AC-01.1) while rejecting duplicate IDs (AC-01.2). FR-05 (Practitioner Conflicts): Rejecting exact-time duplicate bookings for the same practitioner (AC-04.1) while allowing different practitioners at the same time (AC-04.2). [project/tests/test_services.py]|
+| Domain model and architecture | Strict separation of responsibilities: Domain entities (domain.py) manage local validation and state transitions; SmartCareDataStore (data_store.py) holds session collections; Services (services.py) coordinate workflows; Pure queries (queries.py) handle sorting and filtering without side effects; Console (console.py) manages terminal interactions. [project/smartcare/] |
+| Design trade-off | Using volatile in-memory storage collections rather than a persistent database. Trade-off: Simplifies single-session architecture and removes external setup dependencies, but results in permanent data loss when the application terminates (FR-10 is retired). [project/smartcare/data_store.py] |
+| Meaningful test and its limits / 100 percent coverage | test_cancel_retains_history verifies that cancelling a SCHEDULED appointment transitions its status to CANCELLED and keeps the exact object reference retrievable in session history. Limit: A passing test or 100% line coverage only proves specific executed paths returned expected outcomes; it does not guarantee freedom from unthought-of edge cases or external integration flaws. [project/tests/test_services.py] |
+| Diagnosed defect and verification | During Stage 8 debugging, a defect allowed practitioner schedule conflicts to bypass checks because has_practitioner_conflict did not correctly exclude target appointment IDs during rescheduling. Verification: Repaired via minimal code correction and verified using regression assertions in test_regressions.py. [project/tests/test_regressions.py] |
+| Shared store and session-state/query responsibilities | The shared SmartCareDataStore maintains the single source of truth for active session collections. Services mutate store state, whereas pure queries (queries.py) take explicit collection inputs and return sorted/filtered subsets without mutating or side-effecting stored records. [project/smartcare/queries.py] |
+| What would break if session-state lookup/query responsibilities changed? | If queries mutated collection state or directly accessed the store instead of receiving explicit input parameters, they would lose functional purity (FP-01), introduce unpredictable side effects, complicate unit testing, and break deterministic rendering in the console layer. [project/smartcare/queries.py] |
+| Why cancellation is domain behaviour / conflict coordination is service behaviour | Cancellation is a core domain invariant (Appointment.cancel()) because an appointment controls its own legal state transitions. Conflict coordination is a service behavior (AppointmentService.book_appointment) because checking availability requires querying the shared store across multiple participant entities. [project/smartcare/domain.py & services.py] |
+| FR-07 retained history test | Tests explicitly assert that after calling cancel_appointment(), the appointment object remains present in the data store, its status property evaluates to AppointmentStatus.CANCELLED, and it is successfully returned by subsequent lookup and listing queries. [project/tests/test_workflows.py]|
+| Actual AI change rejected/modified or honestly accepted with verification | Rejected: Copilot suggested introducing an external logging framework (logging.getLogger()) for event tracing, which violated the strict zero-runtime-dependency standard library policy. Accepted: Input sanitization checks for patient search, verified via independent test execution. [project/smartcare/services.py] |
+| Unresolved limitation / future production work | Session-only volatile in-memory storage (all data is discarded upon program exit). Future Work: Migrate to a durable relational database (e.g., SQLite or PostgreSQL) with a repository pattern abstraction layer, alongside robust user authentication and access control. [README.md] |
+| Personal implementation contribution | Implemented core service coordination workflows (AppointmentService), including booking conflict validation, cancellation handling, and practitioner appointment listing. [project/smartcare/services.py] |
+| Personal test/review/design/integration contribution | Designed and authored comprehensive regression and service test suites (test_services.py, test_regressions.py), performed rigorous peer code reviews via GitHub Pull Requests, and verified clean integration builds. [project/tests/] |
+| PG agentic change and rescheduling verification | Implemented guarded appointment rescheduling (Appointment.reschedule and AppointmentService.reschedule_appointment) via supervised agent workflows, ensuring identity preservation, self-exclusion no-ops, slot release, and conflict rejection. [project/tests/test_rescheduling.py] |
+| PG responsible-AI risk/remediation or supported no finding | Audited AI-assisted contributions using the VERIFY and TRUST frameworks, evaluated PII minimisation and supply-chain dependencies (requirements-dev.txt), and implemented robust assurance verification tests (test_assurance.py). [project/tests/test_assurance.py] |
 
 Optional bounded-change practice only: validation rule, focused test, safe error-message change, explicit-input query or agreed status rule with test. Explain expected impact before editing, make a small change, run the test, and identify evidence to inspect if unsure. No live AI unless explicitly permitted. Preserve the submitted candidate.
 
-Practice question/change and reasoning: [response or not undertaken]
-Separate reflection / peer / common team viva evidence links and routing: [response]
+**Practice question/change and reasoning:**
+- *Not undertaken.* As permitted by the assignment instructions, bounded-change practice is an optional workflow exercise rather than a compulsory assessment requirement. Our group elected to preserve the verified release candidate (v1.0-release) without further code modifications to ensure stability and pristine test execution across all common and postgraduate suites.
+  
+**Separate reflection / peer / common team viva evidence links and routing:**
+- *Group Reflection:* The approximately 500-word group reflection essay has been compiled and routed separately through the published unit submission portal.
+
+- *Confidential Peer Assessments:* Individual confidential peer assessment forms have been completed independently by each member (Labiba, Tanika, and Julian) and submitted via the designated course route.
+
+- *Team Viva / Oral Evidence:* Common team oral presentation and demonstration artifacts have been arranged and recorded according to the teaching team's published schedule and guidelines.
+
 No further coding stage. Later corrections use the published assessment process.
