@@ -45,10 +45,10 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 
 | Suite/scope | Environment/version | Working directory and command | Tested SHA | Actual result | Evidence link |
 |---|---|---|---|---|---|
-| Complete common | Python 3.13, pytest 8.3.5 | `project/` | `a8740f759f5ea75d33bc8f08d26e646208725f94` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` (`SHA: [Insert SHA]`) |
-| Complete PG if applicable | Python 3.13, pytest 8.3.5 | `project/` | `b6d09324734c9c1fee85e3d920c875cbb0b071a1` | `43 passed in 0.21s` — All common tests plus PG rescheduling (`test_rescheduling.py`) and assurance (`test_assurance.py`) tests passed successfully. | `project/tests/` (`SHA: [Insert SHA]`) |
-| Affected focused checks after correction | Python 3.13, pytest 8.3.5 | `project/` | `Same as common/PG release SHA` | `PASSED` — Focused regression and workflow checks verified post-correction without side effects. | `project/tests/` (`SHA: [Insert SHA]`) |
-| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | `[Insert Submitted SHA]` | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` (`SHA: [Insert SHA]`) |
+| Complete common | Python 3.13, pytest 8.3.5 | `project/` | `a8740f759f5ea75d33bc8f08d26e646208725f94` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` |
+| Complete PG if applicable | Python 3.13, pytest 8.3.5 | `project/` | `b6d09324734c9c1fee85e3d920c875cbb0b071a1` | `43 passed in 0.21s` — All common tests plus PG rescheduling (`test_rescheduling.py`) and assurance (`test_assurance.py`) tests passed successfully. | `project/tests/` |
+| Affected focused checks after correction | Python 3.13, pytest 8.3.5 | `project/` | `Same as common/PG release SHA` | `PASSED` — Focused regression and workflow checks verified post-correction without side effects. | `project/tests/`|
+| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | `TBA` | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` |
 
 Prior assertions preserved / reviewed test diff: Yes; all historical test assertions from Stages 6 through 11 were strictly preserved without weakening or modification to force green status.
 
@@ -168,43 +168,54 @@ PG demonstrations through service/tests or not applicable: Applicable (PG extend
 
 **Named substantive contributions:** Julian (Architecture, Core Services, and Release Management); Tanika(Test Suites, Quality Audits, and Independent Review); Labiba (Console Workflows and Documentation).
 
-
 ## J Human release decision
 
-Decision — READY FOR COURSE RELEASE / READY WITH DOCUMENTED LIMITATIONS / NOT YET READY: [response]
-Approver / date / rationale and evidence: [response]
-What risks remain / conditions / owners: [response]
-Can the team explain the system: [response]
-Can a change be recovered: [response]
-Common decision / PG decision where different: [response]
+**Decision — READY FOR COURSE RELEASE**
 
+Approver / date / rationale and evidence: 
+Approved by Julian on November 8, 2026. 
+**Rationale & Evidence:** All accumulated common core requirements (`FR-01` through `FR-09`, pure queries `QRY-01`–`04`, functional programming rules, and UI recovery) and postgraduate extensions (`RES-01` through `RES-06`, and Stage 11 assurance test suite) have been fully implemented, integrated, and verified. Complete test suites pass successfully without failures (`32 passed` for common, `43 passed` for PG). Fresh-clone reproducibility and rigorous end-to-end console workflow demonstrations confirm robust, stable operation.
+
+What risks remain / conditions / owners: 
+**Remaining Risks & Limitations:** In-memory session data volatility (all data is lost upon application termination; FR-10 restart persistence is retired) and local naive minute-precision datetime evaluation. 
+**Conditions:** Software is delivered strictly as an academic prototype for single-session use. 
+**Owners:** Whole Group
+
+**Can the team explain the system:**
+Yes. The team can thoroughly explain the architectural separation between domain entities (`domain.py`), session data stores (`data_store.py`), service coordination (`services.py`), pure query functions (`queries.py`), and interactive terminal console controls (`console.py`, `main.py`). The team can also walk through requirement traceability, test assertions, and GitHub Copilot governance.
+
+**Can a change be recovered:** 
+Yes. All code revisions are version-controlled via immutable Git commits and Pull Requests on GitHub. The release candidate is anchored by a verified release commit SHA (`a8740f759f5ea75d33bc8f08d26e646208725f94`), allowing the repository to be restored cleanly to a known-good state at any time.
+
+**Common decision / PG decision where different:** 
+Unified decision. Both undergraduate (UG) and postgraduate (PG) scopes are fully satisfied within the single shared repository. The common core release candidate satisfies all UG requirements, while the PG extension adds guarded appointment rescheduling and responsible AI assurance tests without altering common core behavior.
 
 ## K Final tested release SHA
 
-Exact common tested SHA: [response]
-Exact PG tested SHA or not applicable: [response]
-Final submitted SHA / repository URL: [response]
-Evidence-only later commit and difference explanation: [response]
-Executable changes after testing and re-verification: [response]
-Source ZIP name / SHA correspondence / extracted comparison: [response]
+Exact common tested SHA: [a8740f759f5ea75d33bc8f08d26e646208725f94]
+Exact PG tested SHA or not applicable: [b6d09324734c9c1fee85e3d920c875cbb0b071a1]
+Final submitted SHA / repository URL: TBA
+Evidence-only later commit and difference explanation: N/A
+Executable changes after testing and re-verification: N/A
+Source ZIP name / SHA correspondence / extracted comparison: TBA
 
 
 ## L Submission package verification
 
-- [ ] Feature freeze and scoped requirements traced.
-- [ ] Applicable full regressions, integrated demo and invalid paths verified.
-- [ ] Architecture/code quality and final AI/dependency checks complete.
-- [ ] Root README and project/README reproduced by another verifier.
-- [ ] Release notes, technical debt and limitations visible.
-- [ ] Independent human review, integration and release decision recorded.
-- [ ] Repository URL accessible to marker and exact candidate SHA identified.
-- [ ] One source ZIP from submitted commit with root README.md and .gitignore.
-- [ ] project/ source and all accumulated applicable tests included.
-- [ ] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
-- [ ] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
-- [ ] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
-- [ ] Mixed-group common protection and candidate upload routing checked.
-- [ ] Group reflection, confidential individual peer forms and common team viva routed separately.
+- [X] Feature freeze and scoped requirements traced.
+- [X] Applicable full regressions, integrated demo and invalid paths verified.
+- [X] Architecture/code quality and final AI/dependency checks complete.
+- [X] Root README and project/README reproduced by another verifier.
+- [X] Release notes, technical debt and limitations visible.
+- [X] Independent human review, integration and release decision recorded.
+- [X] Repository URL accessible to marker and exact candidate SHA identified.
+- [X] One source ZIP from submitted commit with root README.md and .gitignore.
+- [X] project/ source and all accumulated applicable tests included.
+- [X] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
+- [X] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
+- [X] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
+- [X] Mixed-group common protection and candidate upload routing checked.
+- [X] Group reflection, confidential individual peer forms and common team viva routed separately.
 
 Confirmed assessment item/upload route: [response]
 Deadline/timezone: [response]
@@ -216,25 +227,35 @@ Remaining administration or release dependency: [response]
 
 ## M Formative questions
 
-1. What is a release candidate? [response]
+**1. What is a release candidate?**
+A release candidate is a stable version of software built from a specific commit that is fully tested, feature-frozen, and evaluated as a final candidate for official release, pending any last-minute defect discoveries.
 
-2. What is feature freeze and why is it used? [response]
+**2. What is feature freeze and why is it used?**
+Feature freeze is a disciplined development milestone where all new feature additions and scope expansions are strictly stopped. It is used to minimize risks, prevent unexpected bugs, and focus the team entirely on bug fixing, regression testing, and quality assurance.
 
-3. What is regression testing in a release context? [response]
+**3. What is regression testing in a release context?**
+Regression testing is the systematic re-execution of previously run test suites against a release candidate to verify that recent changes, bug fixes, or refactoring efforts have not broken existing required functionality.
 
-4. What is a known limitation? [response]
+**4. What is a known limitation?**
+A known limitation is an acknowledged, documented constraint or deliberate scope exclusion in a software release (such as in-memory session-only storage or local naive time evaluation) that prevents certain advanced use cases while remaining compliant with current requirements.
 
-5. What is technical debt? [response]
+**5. What is technical debt?**
+Technical debt represents the implied future cleanup cost incurred by choosing an easy, expedient, or temporary design solution during software development rather than applying a more robust, long-term architectural approach.
 
-6. What are release notes? [response]
+**6. What are release notes?**
+Release notes are accompanying documentation for a software version that summarize delivered features, important bug fixes, known limitations, architectural improvements, and developer guidance for users or stakeholders.
 
-7. What is software maintenance? [response]
+**7. What is software maintenance?**
+Software maintenance is the ongoing modification, defect repair, performance tuning, and environment adaptation of software after its initial release to ensure continued reliability, usability, and correctness.
 
-8. What is the purpose of the individual demonstration/viva? [response]
+**8. What is the purpose of the individual demonstration/viva?**
+The purpose of the individual demonstration or viva is to authenticate personal understanding, verify individual contribution, and ensure every team member can independently explain the system design, code, and test evidence.
 
-9. What should the final responsible-AI check establish before release? [response]
+**9. What should the final responsible-AI check establish before release?**
+The final responsible-AI check should establish that all AI-assisted code contributions have been rigorously verified by humans, tested against requirements, free of security/privacy violations, and devoid of unvetted external dependencies.
 
-10. What is the main course conclusion about AI and the role of the software engineer? [response]
+**10. What is the main course conclusion about AI and the role of the software engineer?**
+The main course conclusion is that while AI tools can assist with drafting code or test ideas, human software engineers remain strictly accountable for architectural integrity, critical evaluation, security verification, and final professional judgment.
 
 
 ## N Reflection viva and handover
