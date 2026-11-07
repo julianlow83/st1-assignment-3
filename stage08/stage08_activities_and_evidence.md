@@ -358,8 +358,6 @@ Use the full handout prompt separately for BOTH defects, after E. Keep each actu
 
 ## J. Required reflections
 
-## J. Required reflections
-
 ### 1. Which Copilot diagnosis appeared convincing but lacked evidence?
 During the diagnostic phase for Defect F8-01 (practitioner booking conflict), one of GitHub Copilot's proposed explanations suggested that `AppointmentService.book_appointment` in `smartcare/services.py` was passing the wrong argument order or mismanaging practitioner IDs prior to calling `store.has_practitioner_conflict()`. 
 
