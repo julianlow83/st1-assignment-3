@@ -160,9 +160,28 @@ Domain entities (`Appointment`, `Patient`, `Practitioner`) own internal state va
 
 ## F. Required reflections
 
-1. Which integration concern was architectural rather than a filtering/sorting detail? <!-- response -->
-2. Which Copilot suggestion did you reject as over-engineering, and why? <!-- response -->
-3. How did you prove cancelled appointments remain retrievable and listable in the same session? <!-- response -->
+### 1. Which integration concern was architectural rather than a filtering/sorting detail?
+*   **Response:**  
+    The primary architectural concern was **maintaining boundary separation and Dependency Inversion across layers** when adding practitioner listing capabilities. 
+    While filtering and sorting are pure computational details handled by `queries.select_appointments` on explicit, in-memory lists, the service layer (`AppointmentService.list_practitioner_appointments`) had to handle **precondition validation** (raising `LookupError` if a practitioner ID does not exist in the data store). Furthermore, the console layer (`console.py`) had to handle **input parsing, status enum conversions, and error recovery** without leaking interaction state or database logic into the domain. Protecting the domain from UI and persistence logic while wiring these layers through pure functions was an architectural decision, not a filtering calculation.
+
+---
+
+### 2. Which Copilot suggestion did you reject as over-engineering, and why?
+*   **Response:**  
+    During the prompt review for Stage 9, GitHub Copilot suggested introducing an **abstract `IAppointmentQueryStrategy` interface class hierarchy** with separate concrete classes (`PractitionerQueryStrategy`, `StatusFilterStrategy`) to execute filtering via the Strategy Pattern.
+    *   **Why it was rejected:**  
+        This was rejected as over-engineering ("interfaceitis" / violation of **YAGNI — You Aren't Gonna Need It**). The SmartCare specification explicitly requires functional purity for query logic (`select_appointments` taking explicit arguments and returning a new sorted list). Wrapping simple, deterministic filtering functions inside multiple strategy classes and interfaces adds unnecessary structural complexity and boilerplate without providing any additional testability or architectural benefit.
+
+---
+
+### 3. How did you prove cancelled appointments remain retrievable and listable in the same session?
+*   **Response:**  
+    We proved that cancelled appointments remain retrievable and listable using a **two-tiered verification approach** combining automated unit tests and full interactive CLI workflow testing:
+    1.  **Automated Unit Assertions (`test_queries.py` & `test_services.py`):**  
+        We wrote unit tests that book an appointment (`A301`), execute `cancel_appointment('A301')`, and then invoke `select_appointments(store.list_appointments(), 'D201', status=None)`. The tests asserted that the returned list contains the original object instance (`assert result[0] is booked`) and that its status is `AppointmentStatus.CANCELLED`.
+    2.  **CLI Menu Retrievability (`test_workflows.py`):**  
+        In the interactive menu demonstration (`UI-01`), we listed a practitioner's appointments with a blank/all status filter (Option 8) after cancellation. The output verified that `A301` was displayed under the `CANCELLED` status banner, proving that cancellation updates domain state without removing the record from session memory.
 
 ## G. Ten formative answers
 
