@@ -352,5 +352,5 @@ The Stage 10 engineering rule mandates following strict human supervision over A
 - **Submitted SHA / explanation if later than tested code:**
   - **Protected Stage 9 Common SHA:** c1e8c874f7c68c865633397dd72decba49bafed3
   - **Tested Integrated PG Code SHA:** 80e8d9fd3af1e31ce9438ddef14556ebbdc92d21
-  - **Final Submitted Evidence SHA:** `[Insert final 40-character SHA after committing this record file, or state "Same as tested integrated PG code SHA"]`
-  - **Explanation of Difference (if applicable):** N/A
+  - **Final Submitted Evidence SHA:** 346014bfafbda69211c4d3597c0bb8a05f48ec60
+  - **Explanation of Difference (if applicable):** Evidence-only documentation update completing Section K in `stage10_pg/stage10_activities_and_evidence.md`; zero production or test code changes inside `project/`.
