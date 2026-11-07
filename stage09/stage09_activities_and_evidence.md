@@ -118,20 +118,28 @@ Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty
 
 | Requirement / test ID | Code location | Case and meaningful assertion | Actual result | Evidence link |
 |---|---|---|---|---|
-| | | | | |
+| QRY-01 | `project/tests/test_queries.py` | `test_select_appointments_practitioner_isolation`: Asserts only requested practitioner `D1` is selected; `D2` control appointment excluded | `PASSED` | `test_queries.py::test_select_appointments_practitioner_isolation` |
+| QRY-02 | `project/tests/test_queries.py` | `test_select_appointments_status_filtering`: Asserts `status=None` includes all, explicit `SCHEDULED`/`CANCELLED` enums filter strictly, no-match produces `[]` | `PASSED` | `test_queries.py::test_select_appointments_status_filtering` |
+| QRY-03 | `project/tests/test_queries.py` | `test_appointment_sort_key_and_tie_break`: Asserts ascending sort by `date_time`, equal-time tie-break by `appointment_id` ("A1" before "A2"), source order unmutated | `PASSED` | `test_queries.py::test_appointment_sort_key_and_tie_break` |
+| QRY-04 | `project/tests/test_workflows.py` | `test_service_list_practitioner_appointments_cases`: Asserts known practitioner gives list, matching status filters, valid unknown ID raises `LookupError`, blank ID or string status raises `ValueError` | `PASSED` | `test_workflows.py::test_service_list_practitioner_appointments_cases` |
+| FP-01 | `project/tests/test_queries.py` | Purity verification: Repeated calls with unchanged inputs return identical outputs without reading/writing I/O or modifying global state | `PASSED` | `test_queries.py::test_query_non_mutation_and_identity` |
+| FP-02 | `project/tests/test_queries.py` | `test_query_non_mutation_and_identity`: Asserts returned list is a distinct container instance (`res is not source`), while contained objects maintain exact reference identity (`res[0] is a1`) | `PASSED` | `test_queries.py::test_query_non_mutation_and_identity` |
+| FP-03 | `project/tests/test_queries.py` | Named sorting key evaluation: Directly verifies `appointment_sort_key(appt)` returns tuple `(date_time, appointment_id)` and that `sorted(..., key=appointment_sort_key)` uses it | `PASSED` | `test_queries.py::test_appointment_sort_key_and_tie_break` |
 
-Include practitioner isolation, every enum status/default all, equal-time ID tie-break, named-key reuse, repeated calls, empty/already-sorted fresh lists, unchanged source order/fields, known-empty/unknown/invalid service cases and retained history.
+Purity explanation from code inspection, including absence of hidden state and I/O:   
+Code inspection of `smartcare/queries.py` confirms that `select_appointments` and `appointment_sort_key` depend strictly on explicit argument inputs (`appointments`, `practitioner_id`, `status`). The functions contain zero global variables, perform no interactive I/O (`input()`, `print()`), make no service or store lookup calls, and do not mutate arguments or contained objects in-place (`appointments.sort()`). Selection is performed via list comprehension, and ordering is executed using standard `sorted(..., key=appointment_sort_key)`, which instantiates and returns a brand-new list container instance.
 
-Purity explanation from code inspection, including absence of hidden state and I/O: <!-- response -->
-What the tests do and do not establish: <!-- response -->
+What the tests do and do not establish:
+* **What the tests establish:** Automated unit tests establish that the query logic is deterministic, handles status filtering/tie-breaking correctly, preserves source list ordering and contained object identity, and that service listing correctly handles ID trimming, unknown practitioner lookups, and input validation bounds.
+* **What the tests do not establish:** Passing tests alone do not prove absolute functional purity. A test cannot catch hidden side-effects if the side-effect (e.g., mutating an internal global log or printing to standard output) is not explicitly asserted against in the test suite. Purity must be established by combining passing tests with direct code inspection of `smartcare/queries.py`.
 
 ## D. Integrated console and workflow evidence
 
 | Scenario / acceptance ID | Reproducible inputs / artefact | Expected result | Observed result and state check | Evidence link |
 |---|---|---|---|---|
-| UI-01 full menu workflow | | | | |
-| UI-02 invalid-input recovery | | | | |
-| Automated service workflow | | | | |
+| UI-01 full menu workflow | Interactive CLI session inputs (Commands: 1, 3, 3, 2, 4, 5, 5, 5, 6, 7, 8, 8, 5, 8, 0) | Complete happy-path execution: Register P1, D1, D2; book A1 (P1/D1 2026-10-01 09:00); reject same-time D1 conflict; book A2 for D2 at same time; cancel A1; verify A1 status CANCELLED; list D1 all vs SCHEDULED; re-book A3 in freed slot; exit session cleanly. | Exited cleanly (Status 0). `SmartCareDataStore` retained history correctly; allowed same-time booking for different practitioner D2; excluded cancelled A1 from SCHEDULED-only listing but retained it in all-status listing. | `tests/test_workflows.py::test_ui_01_full_menu_workflow` |
+| UI-02 invalid-input recovery | Interactive CLI session inputs (Commands: 99, 1, 3, 5, 5, 6, 8, 0) | Graceful error recovery: Catch `ValueError` / `LookupError` / invalid choices, print diagnostic message, maintain menu loop without crashing or partial state changes. | Recovered gracefully on all invalid inputs. Rejected invalid choice (99), duplicate registration, missing participant, malformed date string ('invalid-date'), non-existent appointment ID, and invalid status string ('invalid_status'). Checked state was completely preserved before/after each rejection. | `tests/test_workflows.py::test_ui_02_invalid_input_recovery` |
+| Automated service workflow | `pytest tests/test_workflows.py` | Automated integration suite executing participant registration, conflict prevention, guarded cancellation, freed-slot rebooking, and error handling. | `PASSED` (All workflow tests executed cleanly in 0.08s). Verified state preservation on rejected calls. | `tests/test_workflows.py` |
 
 Include registration/find, booking, conflict rejection, different-practitioner booking, cancellation, retrieval, listing/filtering, freed slot and exit; duplicate/unknown/blank IDs, malformed/impossible date, invalid status, unknown choice and repeated cancellation. Identify before/after state and subsequent successful action.
 
