@@ -95,13 +95,24 @@ class SmartCareDataStore:
         """Return a new list containing all stored appointment objects."""
         return list(self._appointments.values())
 
-    def has_practitioner_conflict(self, practitioner_id: str, date_time: datetime) -> bool:
-        """Return True if practitioner_id already has a SCHEDULED appointment at date_time."""
-        for appt in self._appointments.values():
+    def has_practitioner_conflict(
+            self,
+            practitioner_id: str,
+            date_time: datetime,
+            exclude_appointment_id: str | None = None,
+    ) -> bool:
+        """Check for another SCHEDULED appointment at this
+        practitioner/time.
+
+        The optional excluded appointment ID is ignored. Do not mutate
+        records.
+        """
+        for appointment in self.list_appointments():
             if (
-                    appt.practitioner.practitioner_id == practitioner_id
-                    and appt.date_time == date_time
-                    and appt.status == AppointmentStatus.SCHEDULED
+                    appointment.appointment_id != exclude_appointment_id
+                    and appointment.practitioner.practitioner_id == practitioner_id
+                    and appointment.date_time == date_time
+                    and appointment.status is AppointmentStatus.SCHEDULED
             ):
                 return True
         return False
