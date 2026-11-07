@@ -155,35 +155,58 @@ As AI agents gain greater autonomy the primary engineering risk shifts from writ
 
 ## D Agent plan and approval
 
-Actual plan-only prompt/context and response or confirmed equivalent artefacts: [links]
+Actual plan-only prompt/context and response or confirmed equivalent artefacts: GitHub Copilot Web/IDE Chat session running plan-only prompt for Stage 10 PG Rescheduling (Section C).
 
 | Plan step / action | Requirement link | Reason | Expected files | Accept / Modify / Reject | Conditions / evidence |
 |---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] |
+| Inspect domain models and add `Appointment.reschedule(new_date_time)` | RES-01, RES-02, RES-06 | Domain entity must validate naive datetime, guard against CANCELLED/COMPLETED states, and update `_date_time` while preserving instance identity. | `project/smartcare/domain.py` | **Accept** | Must preserve appointment ID, patient, and practitioner references. Must raise `ValueError` without mutating state on terminal target states or invalid datetimes. |
+| Add `AppointmentService.reschedule_appointment` orchestration | RES-01–06, RES-05-R2 | Service layer must validate IDs, perform lookup, check practitioner conflicts, call domain reschedule, and return the same appointment instance. | `project/smartcare/services.py` | **Accept** | Must reuse `SmartCareDataStore.has_practitioner_conflict()` with `exclude_appointment_id=appointment_id`. Unknown IDs raise `LookupError`; blank/invalid IDs raise `ValueError`. |
+| Add new unit/integration tests for rescheduling | RES-01–06, AC-RES-01–06-R2 | Comprehensive test suite covering positive moves, same-time no-op self-exclusion, practitioner conflicts, invalid datetimes, terminal state guards, freed slot rebooking, and current-session lookup/listing visibility. | `project/tests/test_rescheduling.py` | **Accept** | New tests must use strong assertions (exact equality, identity `is`, exact exceptions). Baseline tests in `tests/` must remain completely untouched. |
+| Modify Patient or Practitioner classes | N/A (Out of Scope) | Unrelated participant behavior must not be altered during rescheduling. | `project/smartcare/domain.py` | **Reject** | Participant structures are strictly protected. |
+| Add database schema or SQLite repository persistence | N/A (Out of Scope) | Application storage remains session-only in memory. SQLite/SQL database redesign is explicitly forbidden. | `project/smartcare/` | **Reject** | Persistence remains in-memory session only (`SmartCareDataStore`). |
+| Add third-party calendar or notification package | N/A (Out of Scope) | External libraries and notification features are explicitly out of scope. | `requirements.txt` | **Reject** | Standard library `datetime` must be reused with zero external dependencies. |
 
-Approved bounded scope / forbidden changes / verification plan: [response]
-Human plan approver and approval before edits: [actual evidence]
-Tool permissions and any expanded-scope requests / decision: [response]
+**Approved bounded scope / forbidden changes / verification plan:**  
+- **Approved Bounded Scope:** Implement `Appointment.reschedule` in `domain.py`, `AppointmentService.reschedule_appointment` in `services.py`, and new tests in `test_rescheduling.py`.
+- **Forbidden Changes:** No database/schema redesign, SQLite, external packages/frameworks, notifications, patient self-service, recurring appointments, alterations to `Patient`/`Practitioner` classes, or changes/weakening of existing baseline tests (Stages 6–9).
+- **Verification Plan:** Run `python -m pytest -q tests/test_rescheduling.py` for focused verification, `python -m pytest -q --ignore=tests/test_rescheduling.py` for common regression checks, and `python -m pytest -q` for full suite execution.
+  
+**Human plan approver and approval before edits:**  
+Approved by Julian prior to allowing any code file modifications or execution commands.
+
+**Tool permissions and any expanded-scope requests / decision:**  
+Tool permissions restricted strictly to local file edits in `project/smartcare/domain.py`, `project/smartcare/services.py`, and `project/tests/test_rescheduling.py`. Automatic git commits, merges, deployments, and unrestricted shell execution remain completely disabled. Zero expanded-scope requests permitted.
 
 ## E Production diff review
 
-Actual proposal / branch diff / version reviewed: [links]
+Actual proposal / branch diff / version reviewed: `git diff main...pg/stage10-rescheduling` (Inspected local feature branch `pg/stage10-rescheduling` against protected Stage 9 common SHA).
 
 | File | Change purpose and reason | Requirement / test link | Expected? | Architecture OK? | Decision | Notes / correction |
 |---|---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] | [response] |
+| `project/smartcare/domain.py` | Add `Appointment.reschedule(new_date_time)` method to validate naive minute-precision datetime, reject `CANCELLED`/`COMPLETED` target states, update `_date_time`, and leave identity attributes untouched. | RES-01, RES-02, RES-06 / `tests/test_rescheduling.py::test_ac_res_01_valid_reschedule_preserves_identity` | **Expected** | **Yes** | **Accept** | Domain entity protects its own state transitions. Preserves patient, practitioner, and ID references. Returns `None`. |
+| `project/smartcare/services.py` | Add `AppointmentService.reschedule_appointment` orchestration method to validate IDs, lookup target, check practitioner conflict using data store helper, invoke domain reschedule, and return same instance. | RES-01–06, RES-05-R2 / `tests/test_rescheduling.py::test_ac_res_01_valid_reschedule_preserves_identity` | **Expected** | **Yes** | **Accept** | Orchestrates lookup and conflict checks. Reuses `SmartCareDataStore.has_practitioner_conflict` with `exclude_appointment_id`. Returns identical object instance. |
+| `README.md` | Add brief PG feature summary note describing Stage 10 rescheduling contracts and session scope. | Assignment Scope Requirement | **Expected** | **Yes** | **Accept** | Documentation update only; zero production or runtime logic altered. |
 
-Every changed file inspected, including new/untracked files: [evidence]
-Unexpected changes, scope creep, secrets/dependencies/configuration, unrelated cleanup: [response or none with evidence]
+Every changed file inspected, including new/untracked files: Checked output of `git status --short` and `git diff --stat`. Verified only expected files (`domain.py`, `services.py`, `test_rescheduling.py`, `README.md`, `stage10_activities_and_evidence.md`) were modified or created.
+
+Unexpected changes, scope creep, secrets/dependencies/configuration, unrelated cleanup: None with evidence. `git diff` confirms zero changes to `Patient`/`Practitioner` classes, zero database/schema scripts added, zero external calendar dependencies in `requirements.txt`, no hardcoded secrets or credentials, and zero modification to baseline test files.
 
 ## F Separate test review
 
 | Test | Criterion | Actual assertion | Assertion meaningful / adequate? | Agent changed expected behaviour? | Human or agent authorship | Decision and reason |
 |---|---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] | [response] |
+| `test_ac_res_01_valid_reschedule_preserves_identity` | AC-RES-01 / RES-01, RES-02 | `assert rescheduled is original`, `assert rescheduled.date_time == new_time`, `assert rescheduled.patient.patient_id == "P101"`, `assert rescheduled.practitioner.practitioner_id == "D201"` | **Meaningful & Adequate:** Verifies exact object instance identity (`is`), updated timestamp, and unchanged participant references. | No | Human-supervised / Agent proposed | **Accept:** Ensures identity preservation and state update without creating a replacement object. |
+| `test_ac_res_02_unknown_appointment_id_raises_lookup_error` | AC-RES-02 / RES-03 | `with pytest.raises(LookupError): appointment_svc.reschedule_appointment("A999", new_time)` | **Meaningful & Adequate:** Asserts exact exception type raised when an unknown appointment ID is supplied. | No | Human-supervised / Agent proposed | **Accept:** Enforces contract requirement that absent targets raise `LookupError`. |
+| `test_ac_res_03_same_practitioner_conflict_rejected` | AC-RES-03 / RES-04 | `with pytest.raises(ValueError): appointment_svc.reschedule_appointment("A301", time_slot_2)`, `assert appt1.date_time == time_slot_1` | **Meaningful & Adequate:** Asserts exception raised on practitioner datetime conflict and verifies original target state remains completely unmutated. | No | Human-supervised / Agent proposed | **Accept:** Protects practitioner schedule conflict rules and state non-mutation. |
+| `test_ac_res_04_different_practitioner_same_time_permitted` | AC-RES-04 / RES-04 | `rescheduled = appointment_svc.reschedule_appointment("A301", time_slot_2)`, `assert rescheduled.date_time == time_slot_2` | **Meaningful & Adequate:** Asserts that rescheduling succeeds when another practitioner occupies the same slot. | No | Human-supervised / Agent proposed | **Accept:** Verifies conflict check is strictly bounded to the same practitioner. |
+| `test_ac_res_05_cancelled_and_completed_rejected` | AC-RES-05 / RES-06 | `with pytest.raises(ValueError): appointment_svc.reschedule_appointment("A301", new_time)`, `assert appt.status is AppointmentStatus.CANCELLED` | **Meaningful & Adequate:** Asserts terminal state guard and verifies target status and date_time remain untouched after failed call. | No | Human-supervised / Agent proposed | **Accept:** Enforces state machine boundary preventing modification of cancelled/completed targets. |
+| `test_ac_res_06_r2_session_lookup_reflects_new_time_and_freed_slot` | AC-RES-06-R2 / RES-05-R2 | `assert store.find_appointment("A301").date_time == new_time`, `new_booking = appointment_svc.book_appointment("A302", "P102", "D201", old_time)` | **Meaningful & Adequate:** Asserts lookups show new timestamp immediately and confirms vacated slot can be re-booked. | No | Human-supervised / Agent proposed | **Accept:** Verifies current-session lookup visibility and old-slot release. |
 
-Comparison with original common tests / any proposed weakening: [response]
-Independent human checks and corrections: [response]
+Comparison with original common tests / any proposed weakening:
+Zero baseline test accommodation or weakening occurred. All original tests from Stages 6–9 in `tests/test_starter.py`, `tests/test_domain.py`, `tests/test_services.py`, `tests/test_queries.py`, `tests/test_workflows.py`, and `tests/test_regressions.py` remain completely untouched and passing green (`python -m pytest -q --ignore=tests/test_rescheduling.py`).
+
+Independent human checks and corrections:
+Human review audited `test_rescheduling.py` line-by-line to reject any potential assertion accommodation (e.g., verifying the agent did not substitute `assert rescheduled is not None` for strict identity `assert rescheduled is original`). Verified that boundary cases for same-time self-exclusion and invalid minute-precision datetimes (non-zero seconds) were explicitly included with strict exception assertions.
 
 ## G Actual verification
 
