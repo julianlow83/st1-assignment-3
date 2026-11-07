@@ -135,3 +135,18 @@ class Appointment:
         if self.status is not AppointmentStatus.SCHEDULED:
             raise ValueError('Only SCHEDULED appointments may be cancelled')
         self._status = AppointmentStatus.CANCELLED
+
+    def reschedule(self, new_date_time: datetime) -> None:
+        """Reschedule a SCHEDULED appointment to a valid naive datetime.
+
+        Raise ValueError for terminal statuses (CANCELLED or COMPLETED) or
+        invalid date_time values, leaving failed state unmutated.
+        """
+        if self._status is not AppointmentStatus.SCHEDULED:
+            raise ValueError('Only SCHEDULED appointments may be rescheduled')
+
+        # Reuse existing minute-precision naive datetime validation
+        valid_time = validate_date_time(new_date_time)
+
+        # Mutate date_time while preserving original identity and participant attributes
+        self._date_time = valid_time
