@@ -19,6 +19,22 @@ from .data_store import SmartCareDataStore
 from .services import PatientService, PractitionerService, AppointmentService
 from .domain import parse_date_time, format_appointment
 
+def run_demo(store: SmartCareDataStore) -> None:
+    """Run a small synthetic demonstration of the SmartCare system."""
+    print("\n=== SmartCare Automated Demonstration ===")
+    patient_svc = PatientService(store)
+    practitioner_svc = PractitionerService(store)
+    appointment_svc = AppointmentService(store)
+
+    # Register participants
+    patient_svc.register_patient("P101", "Alice Smith")
+    practitioner_svc.register_practitioner("D201", "Dr. House", "General Practice")
+    print("Registered Patient P101 and Practitioner D201.")
+
+    # Book appointment
+    dt = datetime(2026, 11, 1, 10, 0)
+    appt = appointment_svc.book_appointment("A301", "P101", "D201", dt)
+    print(f"Successfully booked appointment -> {format_appointment(appt)}")
 
 def run_menu(store: SmartCareDataStore) -> None:
     """
@@ -131,3 +147,4 @@ def run_menu(store: SmartCareDataStore) -> None:
                 print(f"[Error] Listing failed: {e}")
         else:
             print("[Error] Unknown menu choice. Please select between 0 and 8.")
+

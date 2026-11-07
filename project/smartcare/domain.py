@@ -150,3 +150,33 @@ class Appointment:
 
         # Mutate date_time while preserving original identity and participant attributes
         self._date_time = valid_time
+
+
+def parse_date_time(date_str: str) -> datetime:
+    """Parse a strict YYYY-MM-DD HH:MM string into a naive minute-precision datetime.
+
+    Raise ValueError if formatting is invalid or precision is incorrect.
+    """
+    if not isinstance(date_str, str) or not date_str.strip():
+        raise ValueError("Date/time string cannot be blank")
+    try:
+        dt = datetime.strptime(date_str.strip(), "%Y-%m-%d %H:%M")
+    except ValueError as e:
+        raise ValueError("Use local date/time in YYYY-MM-DD HH:MM format") from e
+
+    # Reuse existing minute-precision naive datetime validation
+    return validate_date_time(dt)
+
+
+def format_appointment(appointment: Appointment) -> str:
+    """Return a clean formatted string representation of an appointment for console display."""
+    if not isinstance(appointment, Appointment):
+        raise ValueError("Expected an Appointment object")
+
+    return (
+        f"ID: {appointment.appointment_id} | "
+        f"Patient: {appointment.patient.patient_id} ({appointment.patient.name}) | "
+        f"Practitioner: {appointment.practitioner.practitioner_id} ({appointment.practitioner.name}) | "
+        f"Time: {appointment.date_time.strftime('%Y-%m-%d %H:%M')} | "
+        f"Status: {appointment.status.name.upper()}"
+    )
