@@ -145,15 +145,18 @@ Include registration/find, booking, conflict rejection, different-practitioner b
 
 ## E. GitHub Copilot review and human decisions
 
-Human design completed before AI: <!-- reference -->
-Actual prompt/context supplied: <!-- paste or accessible reference -->
-Actual response: <!-- accessible reference -->
+Human design completed before AI: Completed Section E pre-Copilot Human Hypotheses for F8-01 and F8-02  
+Actual prompt/context supplied: Full handout diagnostic prompt with observed/expected behavior, minimal reproduction, failing test path, human hypothesis, and source snippet from `smartcare/data_store.py`  
+Actual response: Copilot generated 3 ranked diagnostic candidates assessing practitioner conflict filtering and lookup status guards  
 
 | AI finding | Code/test evidence | Severity | Accept/Modify/Reject and reason | Change or no change | Actual verification |
 |---|---|---|---|---|---|
-| | | | | | |
+| **Finding 1:** Missing practitioner ID predicate in `has_practitioner_conflict()` | Inspected `smartcare/data_store.py` line 112 against baseline diff; line reads `if appt.date_time == date_time...` without checking `practitioner_id` | Critical | **Accept** — Re-adding `appt.practitioner.practitioner_id == practitioner_id` restores compliance with AC-04.2 | Change | Executed `python -m pytest tests/test_regressions.py::test_f8_01_different_practitioners_same_time_permitted`; test passed in 0.04s |
+| **Finding 2:** Service layer (`AppointmentService.book_appointment`) passing incorrect arguments | Inspected call site in `smartcare/services.py`; service correctly passes `practitioner_id` and `date_time` | Important | **Reject** — Service call signature and arguments are clean; fault belongs strictly to store boundary | No change | Code diff inspection confirmed `services.py` remained untouched and correct |
+| **Finding 3:** Injected status guard filtering `CANCELLED` appointments in `find_appointment()` | Inspected `smartcare/data_store.py` line 92; method contains `if appointment is not None and appointment.status == AppointmentStatus.CANCELLED: return None` | Critical | **Accept** — Removing the status conditional restores retention and retrieval of cancelled appointments per FR-07 / AC-05.2 | Change | Executed `python -m pytest tests/test_regressions.py::test_f8_02_find_cancelled_appointment_retained`; test passed in 0.03s |
 
-Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate: <!-- response -->
+Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate:  
+Domain entities (`Appointment`, `Patient`, `Practitioner`) own internal state validation and state machine transitions without depending on external infrastructure or UI packages. `SmartCareDataStore` manages in-memory collection storage silently without printing terminal output or executing business rules. Application services (`services.py`) orchestrate workflows, coordinate store lookups, and delegate filtering to pure queries (`queries.py`) without performing interactive I/O. Pure query functions operate on explicit arguments and return new sorted containers without mutating source collections or store state. Terminal presentation (`console.py`) parses raw CLI text, converts status strings to enums, handles exceptions gracefully, and renders display output without embedding domain rules or direct storage manipulations.
 
 ## F. Required reflections
 
