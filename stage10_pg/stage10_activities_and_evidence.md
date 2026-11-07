@@ -13,16 +13,16 @@ Optional UG contributors: N/A (They are working on 12)
 ## A Access baseline and recovery
 
 - **Confirmed GitHub Copilot feature/mode, version/environment and teaching-team approval reference:**
-  GitHub Copilot Agent mode (teaching-team approved).
+  GitHub Copilot on GitHub web version paired with local PyCharm IDE environment (confirmed teaching-team approved workspace and web Copilot interaction route).
 
 - **Actual account access and tool permissions check:**
-  Confirmed active GitHub account entitlement with Copilot Agent privileges; tool execution and file edits bounded strictly to local workspace files (`project/smartcare/domain.py`, `project/smartcare/services.py`, `project/tests/test_rescheduling.py`) with automatic merge, deployment, and shell execution withheld.
+  Confirmed active GitHub account entitlement with Copilot privileges; local file editing performed in PyCharm bounded to workspace files (`project/smartcare/domain.py`, `project/smartcare/services.py`, `project/tests/test_rescheduling.py`); automatic merge, deployment, and shell execution withheld.
 
 - **Live route or convenor-confirmed equivalent staged interaction:**
-  Live route using confirmed local VS Code GitHub Copilot agent with plan-first approval gate enforced prior to file modifications.
+  Live route using GitHub Copilot web interface for plan proposals and review comparison, with human approval gate enforced prior to manually applying file edits in PyCharm.
 
 - **Access limitation and tutor resolution if applicable:**
-  None; live access confirmed in environment with plan review controls active.
+  None; web Copilot access confirmed with plan review controls active.
 
 - **Protected Stage 9 common SHA / recoverable reference:**
   c1e8c874f7c68c865633397dd72decba49bafed3
