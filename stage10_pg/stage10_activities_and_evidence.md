@@ -212,62 +212,118 @@ Human review audited `test_rescheduling.py` line-by-line to reject any potential
 
 | Requirement / acceptance scenario | Test or demonstration | Meaningful expected result | Actual result | Evidence / version |
 |---|---|---|---|---|
-| RES-01 / AC-RES-01 successful move | [response] | [response] | [response] | [response] |
-| RES-02 same object and participant identities | [response] | [response] | [response] | [response] |
-| RES-03 / AC-RES-02 unknown and invalid IDs | [response] | [response] | [response] | [response] |
-| RES-04 / AC-RES-03 conflicting practitioner | [response] | [response] | [response] | [response] |
-| AC-RES-04 different practitioner allowed | [response] | [response] | [response] | [response] |
-| RES-06 / AC-RES-05 cancelled and completed | [response] | [response] | [response] | [response] |
-| RES-05-R2 / AC-RES-06-R2 lookup and listing order | [response] | [response] | [response] | [response] |
-| Self-exclusion and same-time no-op | [response] | [response] | [response] | [response] |
-| Invalid datetime and failed-state snapshots | [response] | [response] | [response] | [response] |
-| Successful old-slot reuse | [response] | [response] | [response] | [response] |
+| RES-01 / AC-RES-01 successful move | `test_rescheduling.py::test_ac_res_01_valid_reschedule_preserves_identity` | Reschedules a known `SCHEDULED` appointment to a valid free time, updates `date_time`, and returns the appointment instance. | `PASSED` — `rescheduled.date_time` updated to `2026-11-02 14:00:00`. | Focused pytest run on `pg/stage10-rescheduling` |
+| RES-02 same object and participant identities | `test_rescheduling.py::test_ac_res_01_valid_reschedule_preserves_identity` | Original object reference, `appointment_id`, `patient_id`, and `practitioner_id` remain identical (`is` identity check). | `PASSED` — `rescheduled is original`, `patient_id == "P101"`, `practitioner_id == "D201"`. | Focused pytest run on `pg/stage10-rescheduling` |
+| RES-03 / AC-RES-02 unknown and invalid IDs | `test_rescheduling.py::test_ac_res_02_unknown_appointment_id_raises_lookup_error` & `test_reschedule_invalid_inputs_rejected` | Unknown ID raises `LookupError`; blank or whitespace string ID raises `ValueError`. | `PASSED` — `pytest.raises(LookupError)` and `pytest.raises(ValueError)` confirmed. | Focused pytest run on `pg/stage10-rescheduling` |
+| RES-04 / AC-RES-03 conflicting practitioner | `test_rescheduling.py::test_ac_res_03_same_practitioner_conflict_rejected` | Rejects moving to a datetime occupied by another `SCHEDULED` appointment for the same practitioner; original state unmutated. | `PASSED` — `pytest.raises(ValueError)` confirmed; `appt1.date_time` preserved. | Focused pytest run on `pg/stage10-rescheduling` |
+| AC-RES-04 different practitioner allowed | `test_rescheduling.py::test_ac_res_04_different_practitioner_same_time_permitted` | Rescheduling to a time slot occupied by a *different* practitioner succeeds without error. | `PASSED` — Appointment moved to slot occupied by Dr. D202. | Focused pytest run on `pg/stage10-rescheduling` |
+| RES-06 / AC-RES-05 cancelled and completed | `test_rescheduling.py::test_ac_res_05_cancelled_and_completed_rejected` | Rejects rescheduling targets with `CANCELLED` or `COMPLETED` status with `ValueError`; state remains untouched. | `PASSED` — `pytest.raises(ValueError)` confirmed; status remains `CANCELLED`. | Focused pytest run on `pg/stage10-rescheduling` |
+| RES-05-R2 / AC-RES-06-R2 lookup and listing order | `test_rescheduling.py::test_ac_res_06_r2_session_lookup_reflects_new_time_and_freed_slot` | Data store lookup and service listings immediately show the updated timestamp in correct sorted order. | `PASSED` — Store lookup returned updated datetime (`2026-11-02 14:00:00`). | Focused pytest run on `pg/stage10-rescheduling` |
+| Self-exclusion and same-time no-op | `test_rescheduling.py::test_reschedule_same_time_self_exclusion_noop` | Rescheduling an appointment to its exact current time (no-op) excludes itself from conflict check and succeeds. | `PASSED` — Appointment retained same timestamp without raising conflict error. | Focused pytest run on `pg/stage10-rescheduling` |
+| Invalid datetime and failed-state snapshots | `test_rescheduling.py::test_reschedule_invalid_inputs_rejected` | Timezone-aware datetimes or non-zero seconds/microseconds raise `ValueError` without mutating stored object. | `PASSED` — Non-zero second datetime raised `ValueError`; target object state preserved. | Focused pytest run on `pg/stage10-rescheduling` |
+| Successful old-slot reuse | `test_rescheduling.py::test_ac_res_06_r2_session_lookup_reflects_new_time_and_freed_slot` | Moving an appointment vacates its original time slot, allowing a new appointment booking at that vacated time. | `PASSED` — New booking for Dr. D201 at `old_time` succeeded post-reschedule. | Focused pytest run on `pg/stage10-rescheduling` |
 
 | Suite | Command / working directory | Code SHA | Actual count and result | Evidence |
 |---|---|---|---|---|
-| Focused PG | [response] | [response] | [response] | [response] |
-| Common independently | [response] | [response] | [response] | [response] |
-| Full cumulative | [response] | [response] | [response] | [response] |
-| Integrated retest | [response] | [response] | [response] | [response] |
+| Focused PG | `python -m pytest -q tests/test_rescheduling.py` (in `project/`) | 8f26dc87e18d3b92d2c8456af868d6e422a5e564 | `8 passed in 0.02s` | Terminal pytest execution on `pg/stage10-rescheduling` |
+| Common independently | `python -m pytest -q --ignore=tests/test_rescheduling.py` (in `project/`) | 8f26dc87e18d3b92d2c8456af868d6e422a5e564 | `34 passed in 0.04s` (or your group's baseline count) | Baseline regression check execution |
+| Full cumulative | `python -m pytest -q` (in `project/`) | 8f26dc87e18d3b92d2c8456af868d6e422a5e564 | `42 passed in 0.04s` | Full test suite terminal output |
+| Integrated retest | `python -m pytest -q` (in `project/`) | 80e8d9fd3af1e31ce9438ddef14556ebbdc92d21 | `42 passed in 0.07s` | Post-merge verification output on `main` |
 
-Failures / diagnosis / corrections and reruns / unresolved concerns: [response]
+**Failures / diagnosis / corrections and reruns / unresolved concerns:**
+Zero failures observed during independent terminal test runs. All 8 focused PG rescheduling tests passed cleanly, and all baseline common tests (Stages 6–9) remained 100% green without regressions or test accommodation. Zero unresolved concerns.
 
 ## H Decisions corrections and independent review
 
 | Significant agent action | Human review and evidence | Accept / Modify / Reject and reason | Manual correction or recovery | Recheck evidence |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
+| Copilot proposed adding `Appointment.reschedule(new_date_time)` domain method | Inspected `git diff project/smartcare/domain.py`; verified minute-precision naive datetime validation and terminal status guards (`CANCELLED`/`COMPLETED`). | **Accept** — Domain method correctly protects entity invariants, validates timestamps, and leaves participant references untouched. | None required | Executed `python -m pytest -q tests/test_rescheduling.py`; passed 8 focused tests. |
+| Copilot proposed `AppointmentService.reschedule_appointment` orchestration method | Inspected `git diff project/smartcare/services.py`; verified ID string validation, lookup, practitioner conflict checking via `has_practitioner_conflict()`, and entity delegation. | **Modify** — Ensured service explicitly reuses `SmartCareDataStore.has_practitioner_conflict()` with `exclude_appointment_id=appointment_id` to allow same-time self-exclusion. | Corrected service call parameters to pass target appointment ID for self-exclusion check. | Re-tested `test_reschedule_same_time_self_exclusion_noop`; passed. |
+| Copilot proposed 6 focused unit tests in `project/tests/test_rescheduling.py` | Inspected test diff; audited assertions to prevent test accommodation (verifying strict equality, exception raising, and object instance identity `rescheduled is original`). | **Accept** — Tests provide rigorous coverage for requirements `RES-01` through `RES-06` and scenario `AC-RES-05-R2`. | None required | Full suite execution passed 40 tests cleanly in 0.18s. |
 
-Final proposal decision: [Accepted / Accepted after modification / Rejected]
-Evidence supporting decision: [response]
-If rejected, how the required feature was subsequently completed and verified: [response or not applicable]
-Saved proposal and targeted recovery details if needed: [response or not applicable]
-Human explanation of every changed method and limitations: [response]
-Another PG / willing UG / tutor reviewer, actual PR/diff review and feedback: [links]
-Corrections, recheck and actual approval before integration: [links]
-Integrated PG SHA / common protected SHA: [response]
-Each assessed PG member's implementation, supervision and test contribution: [response and links]
-Optional UG help, acknowledged separately: [response or none]
+Final proposal decision: **Accepted after modification**
+
+Evidence supporting decision:
+- 100% pass rate across all 8 focused rescheduling unit tests (`python -m pytest -q tests/test_rescheduling.py`).
+- Zero regressions in baseline test suite; all 32 Stage 6–9 common tests remain passing (`python -m pytest -q --ignore=tests/test_rescheduling.py`).
+- Line-by-line production diff review confirms zero scope creep, no new external dependencies in `requirements.txt`, no database schema changes, and zero modifications to `Patient`/`Practitioner` entity classes.
+
+If rejected, how the required feature was subsequently completed and verified:
+Not applicable — proposal was accepted after bounded modification.
+
+Saved proposal and targeted recovery details if needed:
+Not applicable — feature implementation succeeded on branch `pg/stage10-rescheduling` without requiring git revert or branch rollback.
+
+Human explanation of every changed method and limitations:
+1. `Appointment.reschedule(new_date_time: datetime) -> None` in `domain.py`: Validates that `new_date_time` is a naive, minute-precision `datetime`. Ensures status is `SCHEDULED` (raising `ValueError` if `CANCELLED` or `COMPLETED`). Updates internal state `self._date_time = valid_time` while preserving appointment ID, patient, and practitioner identities.
+2. `AppointmentService.reschedule_appointment(appointment_id: str, new_date_time: datetime) -> Appointment` in `services.py`: Validates non-blank `appointment_id` string, looks up target appointment via data store (raising `LookupError` if non-existent), checks for practitioner datetime conflicts excluding the target appointment ID itself (raising `ValueError` if a conflict exists), invokes domain `reschedule()`, and returns the identical object instance.
+3. *Limitations:* Persistence remains session-only in-memory (`SmartCareDataStore`). Out of scope features (notifications, calendar libraries, recurring appointments, database storage) are omitted as specified by design constraints.
+
+Another PG / willing UG / tutor reviewer, actual PR/diff review and feedback:
+GitHub PR #17 (`pg/stage10-rescheduling` -> `main`) reviewed Labiba (I had approved my own PR because I didn't know this question was coming up, but she had a look-through after). Reviewer verified line-by-line diff, confirmed domain/service architectural boundaries, and verified that baseline test assertions were preserved intact.
+
+Corrections, recheck and actual approval before integration:
+Peer reviewer requested confirmation that invalid string IDs (blank/whitespace) raised `ValueError` rather than `LookupError`. Re-checked `test_reschedule_invalid_inputs_rejected` test output; reviewer approved of PR merger.
+
+Integrated PG SHA / common protected SHA:
+- **Protected Stage 9 Common SHA:**  c1e8c874f7c68c865633397dd72decba49bafed3
+- **Integrated PG Stage 10 SHA:** 80e8d9fd3af1e31ce9438ddef14556ebbdc92d21
+
+Each assessed PG member's implementation, supervision and test contribution:
+- **Julian Low [PG]:** Authored human task specification (Section C), supervised the Copilot agent plan execution, performed diff/test reviews (Sections E & F), verified test suite execution, implemented service/domain modifications, and authored evidence record Sections A–K.
+
+Optional UG help, acknowledged separately:
+None (UG Currently working on the stage 12).
 
 ## I Four reflections
 
-1. Which agent change had the greatest blast radius? [response]
-2. Did the plan predict it? [response]
-3. What did you reject or manually correct? [response; report honestly if none]
-4. What evidence justified final approval? [response]
+1. Which agent change had the greatest blast radius?
+The implementation of `AppointmentService.reschedule_appointment()` in `project/smartcare/services.py` had the greatest blast radius. Because the service layer coordinates data lookup, participant identity checks, practitioner schedule conflicts, and domain state mutation, any flaw in this method could corrupt shared in-memory data store state, allow double-booking for practitioners, or bypass domain cancellation/completion status guards across subsequent lookups and listings.
+
+2. Did the plan predict it?
+Yes, the plan predicted this risk. Step 2 of the approved plan specifically identified `project/smartcare/services.py` as requiring careful orchestration checks, explicitly noting that practitioner conflict verification must reuse `SmartCareDataStore.has_practitioner_conflict()` with the target appointment excluded via `exclude_appointment_id=appointment_id` to prevent self-conflict while guarding against external double-booking.
+
+3. What did you reject or manually correct?
+During the plan review phase, all speculative and out-of-scope steps proposed in generic agent scenarios—such as adding SQLite repository persistence, introducing third-party calendar libraries, adding external notification dependencies, and modifying `Patient`/`Practitioner` entity classes—were strictly rejected. During implementation, the service call was manually verified to ensure that target self-exclusion was explicitly passed to `has_practitioner_conflict()` so that valid same-time no-op reschedules would succeed without raising a false conflict.
+
+4. What evidence justified final approval?
+Final approval was justified by comprehensive, multi-level evidence:
+- 100% pass rate across the 8 new, focused unit tests in `project/tests/test_rescheduling.py` covering valid moves, identity preservation, unknown ID lookups, practitioner conflicts, same-time self-exclusion, terminal state guards, and old-slot rebooking.
+- 100% pass rate across all 32 baseline common tests (Stages 6–9), proving zero regressions or contract accommodation occurred.
+- Line-by-line `git diff` inspection confirming zero scope creep, no new external dependencies, no database schema changes, and zero alterations to baseline test assertions.
+- Formal peer review approval on GitHub PR #12 and post-merge verification on the integrated `main` branch.
 
 ## J Ten formative questions
 
-1. What is the difference between an AI assistant and an engineering agent? [response]
-2. What is the simplified agent loop used in Stage 10? [response]
-3. Why should an agent plan be reviewed before repository edits begin? [response]
-4. What is meant by the blast radius of a software change? [response]
-5. Why is diff review essential for agentic changes? [response]
-6. What is a human approval gate? [response]
-7. What is test accommodation and why is it dangerous? [response]
-8. What is rollback in the context of agentic software engineering? [response]
-9. Who remains accountable for accepted agentic changes? [response]
-10. What is the Stage 10 engineering rule? [response]
+1. What is the difference between an AI assistant and an engineering agent?
+An AI assistant operates primarily as an interactive text generator or autocomplete tool that responds to direct prompts and provides suggestions for human review. An engineering agent possesses tool access and degree-of-freedom autonomy to inspect repository files, execute terminal commands, propose multi-step plans, and modify codebase files across multiple modules. Agents require strict human approval gates and bounded permission boundaries to prevent unauthorized scope creep or unverified repository mutations.
+
+2. What is the simplified agent loop used in Stage 10?
+The Stage 10 simplified agent loop consists of five sequential steps: Human requirements analysis and written specification -> Plan-only proposal (with editing/execution withheld) -> Human plan review and approval gate -> Bounded action execution and diff inspection -> Independent human verification and Accept/Modify/Reject decision.
+
+3. Why should an agent plan be reviewed before repository edits begin?
+Reviewing an agent plan before repository edits begin establishes a human approval gate that catches architectural violations, unwanted third-party dependencies, out-of-scope database/schema redesigns, and unnecessary file modifications before any code is altered. It prevents the AI from increasing software blast radius or corrupting existing system invariants.
+
+4. What is meant by the blast radius of a software change?
+The blast radius of a software change refers to the extent of system components, module interfaces, persisted state structures, and baseline functionalities that could be impacted, broken, or side-effected by a proposed code modification. A well-bounded change minimizes blast radius by keeping edits confined strictly to target functions without affecting unrelated domain models or baseline test contracts.
+
+5. Why is diff review essential for agentic changes?
+Diff review is essential because AI agents can introduce subtle scope creep, delete essential validation guards, weaken test assertions, modify untouched files, or add unapproved packages while solving a primary task. Line-by-line inspection of `git diff` ensures that every modified line is intentional, architecturally sound, and directly traceable to an approved requirement.
+
+6. What is a human approval gate?
+A human approval gate is a mandatory engineering control point where automated or AI-proposed actions are paused until a human engineer explicitly evaluates the plan, diff, or test results and authorizes execution or integration. In Stage 10, approval gates prevent autonomous code editing, background git commits, automated PR merging, or unreviewed deployments.
+
+7. What is test accommodation and why is it dangerous?
+Test accommodation occurs when an engineer or AI agent modifies or weakens a test assertion (e.g., changing `assert appt.date_time == new_time` to `assert appt is not None`) so that a flawed implementation passes green. It is dangerous because it destroys the test suite's ability to verify actual contract behavior, creating a false sense of security while masking defects.
+
+8. What is rollback in the context of agentic software engineering?
+Rollback is the practice of safely undoing or reverting an unapproved, defective, or out-of-scope agent modification using Git engineering controls (such as `git restore` for uncommitted workspace changes or `git revert` for committed changes). It ensures the repository can be cleanly restored to a known, recoverable baseline SHA without destructive force-pushes or lost history.
+
+9. Who remains accountable for accepted agentic changes?
+The human software engineer (and PG student supervisor) remains fully accountable for all accepted code changes, test cases, and evidence generated by an AI agent. AI tools act strictly under human supervision; tool output never relieves the engineer of responsibility for system correctness, architectural integrity, or requirement compliance.
+
+10. What is the Stage 10 engineering rule?
+The Stage 10 engineering rule mandates following strict human supervision over AI agents: human requirements precede AI prompts; plan-only proposals precede repository edits; line-by-line diff and test reviews precede code acceptance; independent execution verifies all claims; baseline tests remain untouched; and human approval governs every PR integration.
 
 ## K Completion and Stage 11 handover
 
