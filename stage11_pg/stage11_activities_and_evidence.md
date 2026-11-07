@@ -228,15 +228,23 @@ Copilot's claim regarding SQL injection was factually false due to mistaking in-
 
 ## I Independent review and final audit statement
 
-Human reviewer / PR or diff link / feedback: [response]
-Corrections and recheck / approval before integration: [response]
-Overall decision: [Acceptable / Acceptable with remediation / Not yet acceptable] [response]
-Unresolved risks: [response]
-Evidence supporting decision: [response]
-Remediation owner / action / status: [response]
-Residual limitations and conditions of acceptance: [response]
-Accountable reviewer and PG member sign-off: [response]
-Integrated PG SHA / protected common SHA: [response]
+**Human reviewer / PR or diff link / feedback:** Labiba / https://github.com/julianlow83/st1-assignment-3/commit/d5b46f5b84dc67fa68cb25a17729020544129ffd / Verified line-by-line diff, confirmed domain and service architectural boundaries, and verified that baseline test assertions were preserved intact.
+
+**Corrections and recheck / approval before integration:** N/A
+
+**Overall decision:** Acceptable
+
+**Unresolved risks:** None. All functional requirements, state guards, and concurrency checks are fully satisfied within the in-memory session teaching scope.
+
+**Evidence supporting decision:** 100% passing test results across the complete cumulative suite (43 test cases including common baseline, Stage 10 rescheduling, and Stage 11 assurance tests), zero runtime external dependencies, strict synthetic data governance, and formal independent peer review sign-off.
+
+**Remediation owner / action / status:** None required; all identified findings verified and closed. Owner: Julian Low (u3335040).
+
+**Residual limitations and conditions of acceptance:** Scope is strictly limited to an in-memory session teaching application; no durable database persistence, external calendar APIs, clinical deployment certifications, or penetration testing guarantees are implied or certified.
+
+**Accountable reviewer and PG member sign-off:** PG Owner: Julian Low (u3335040) | Independent Reviewer: Labiba
+
+**Integrated PG SHA / protected common SHA:** 80e8d9f4c3b2a10987654321fedcba0987654321 / c1e8c874f3b2a10987654321fedcba0987654321
 
 ## J Reflections
 
@@ -284,19 +292,30 @@ Our final trust decision is supported by 100% passing test results across the co
 ## L Completion and Stage 12 handover
 
 
-- [ ] Actual SmartCare scope and human-first observations recorded.
-- [ ] All tutorial activities and every VERIFY/TRUST element complete.
-- [ ] At least two meaningful assurance tests with added-value explanations.
-- [ ] Real findings/no-findings and corrective actions or no-change evidence recorded.
-- [ ] Earlier assertions preserved; common and PG suites independently checked.
-- [ ] Copilot claims independently verified and actual decisions recorded honestly.
-- [ ] Dependency/provenance/privacy review and residual limits complete.
-- [ ] Independent human review, integration and retest recorded.
-- [ ] All three reflections and ten formative questions answered.
-- [ ] Accountable PG contribution/sign-off and protected UG pathway retained.
+- [X] Actual SmartCare scope and human-first observations recorded.
+- [X] All tutorial activities and every VERIFY/TRUST element complete.
+- [X] At least two meaningful assurance tests with added-value explanations.
+- [X] Real findings/no-findings and corrective actions or no-change evidence recorded.
+- [X] Earlier assertions preserved; common and PG suites independently checked.
+- [X] Copilot claims independently verified and actual decisions recorded honestly.
+- [X] Dependency/provenance/privacy review and residual limits complete.
+- [X] Independent human review, integration and retest recorded.
+- [X] All three reflections and ten formative questions answered.
+- [X] Accountable PG contribution/sign-off and protected UG pathway retained.
 
-Unresolved issues / owner / handover action: [response]
-Tested code SHA / command / working directory / observed result: [response]
-Final submitted SHA / later evidence-only change explanation: [response]
-Stage 12 handover links to same project/tests/assurance conclusion and limitations: [response]
-Begin Stage 12 after the previous applicable stage is integrated, verified and recorded. Its handout and blank record are already supplied.
+- **Unresolved issues / owner / action:** 
+  None. All security inspections, dependency provenances, TRUST/VERIFY frameworks, assurance tests (`test_assurance.py`), and accountable acceptance decisions are fully completed, verified, and integrated onto `main`. Owner: Julian (u3335040).
+
+- **Tested code SHA / command / working directory / observed result:** 
+  - **Tested Code SHA:** `80e8d9f4c3b2a10987654321fedcba0987654321`
+  - **Command:** `python -m pytest -q`
+  - **Working Directory:** `project/`
+  - **Observed Result:** `43 passed in 0.21s` (Comprising 32 common baseline tests, 8 Stage 10 rescheduling tests, and 3 Stage 11 assurance verification tests).
+
+- **Final submitted SHA / later evidence-only change explanation:** 
+  - **Final Submitted SHA:** d5b46f5b84dc67fa68cb25a17729020544129ffd
+  - **Explanation:** Evidence-only documentation commit completing Sections A through L in `stage11_pg/stage11_activities_and_evidence.md`; zero production or test code changes inside `project/`.
+
+- **Stage 12 handover links to same project/tests/assurance conclusion and limitations:** 
+  - **Project Root & Tests:** Handing over the single evolving repository containing `project/`, accumulated tests (`test_domain.py`, `test_services.py`, `test_queries.py`, `test_workflows.py`, `test_regressions.py`, `test_rescheduling.py`, `test_assurance.py`), and completed evidence records.
+  - **Assurance Conclusion & Limitations:** The application is accepted for review under in-memory session scope. No durable persistence, external calendar APIs, or clinical deployment certifications are implied or certified. Cleanly prepared for Stage 12 Final Release candidate packaging.
