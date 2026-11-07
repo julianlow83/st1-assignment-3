@@ -6,20 +6,37 @@ All Assignment 3 stage materials are provided from the beginning. Complete this 
 
 This is a blank student record. Use actual accessible links and concise evidence; do not invent an agent session, test result or approval. Retain this record's headings when linking equivalent issue/PR evidence.
 
-Group/tutorial: [response]
-Assessed PG members and roles: [response]
-Optional UG contributors: [response or none]
+Group/tutorial: Mon 9:30 - 11:30 Group 3
+Assessed PG members and roles: Julian Low (u335040)
+Optional UG contributors: N/A (They are working on 12)
 
 ## A Access baseline and recovery
 
-- Confirmed GitHub Copilot feature/mode, version/environment and teaching-team approval reference: [response]
-- Actual account access and tool permissions check: [response]
-- Live route or convenor-confirmed equivalent staged interaction: [response]
-- Access limitation and tutor resolution if applicable: [response]
-- Protected Stage 9 common SHA / recoverable reference: [response]
-- Common baseline command / project working directory / actual result: [response]
-- Clean branch and preparer / recovery baseline: [response]
-- Evidence-only later SHA if different / explanation: [response]
+- **Confirmed GitHub Copilot feature/mode, version/environment and teaching-team approval reference:**
+  GitHub Copilot Agent mode (teaching-team approved).
+
+- **Actual account access and tool permissions check:**
+  Confirmed active GitHub account entitlement with Copilot Agent privileges; tool execution and file edits bounded strictly to local workspace files (`project/smartcare/domain.py`, `project/smartcare/services.py`, `project/tests/test_rescheduling.py`) with automatic merge, deployment, and shell execution withheld.
+
+- **Live route or convenor-confirmed equivalent staged interaction:**
+  Live route using confirmed local VS Code GitHub Copilot agent with plan-first approval gate enforced prior to file modifications.
+
+- **Access limitation and tutor resolution if applicable:**
+  None; live access confirmed in environment with plan review controls active.
+
+- **Protected Stage 9 common SHA / recoverable reference:**
+  c1e8c874f7c68c865633397dd72decba49bafed3
+
+- **Common baseline command / project working directory / actual result:**
+  - **Command:** `cd project && python -m pytest -q`
+  - **Working Directory:** `project/`
+  - **Actual Result:** `32 passed in 0.15s`
+
+- **Clean branch and preparer / recovery baseline:**
+  Created branch `pg/stage10-rescheduling` from protected Stage 9 SHA (`git switch -c pg/stage10-rescheduling`); verified `git status --short` is clean prior to any PG edits.
+
+- **Evidence-only later SHA if different / explanation:**
+  N/A
 
 ## B Tutorial activities
 
