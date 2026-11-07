@@ -1,14 +1,14 @@
-"""Simple workflows using a shared SmartCareDataStore object."""
-
+from __future__ import annotations
+from typing import Optional, List
 from datetime import datetime
-
-from smartcare.data_store import SmartCareDataStore
-from smartcare.domain import (
+from .data_store import SmartCareDataStore
+from .domain import (
     Appointment,
     AppointmentStatus,
     Patient,
     Practitioner,
 )
+from .queries import select_appointments
 
 
 class PatientService:
@@ -172,14 +172,22 @@ class AppointmentService:
         return appointment
 
     def list_practitioner_appointments(
-        self,
-        practitioner_id: str,
-        status: AppointmentStatus | None = None,
-    ) -> list[Appointment]:
-        """New ordered list; default includes every status.
+            self,
+            practitioner_id: str,
+            status: Optional[AppointmentStatus] = None
+    ) -> List[Appointment]:
+        if not practitioner_id or not practitioner_id.strip():
+            raise ValueError("Practitioner ID cannot be blank.")
 
-        Unknown practitioner raises LookupError, invalid status
-        ValueError; a known practitioner with no matches returns an
-        empty list.
-        """
-        raise NotImplementedError('Stage 9: practitioner appointments')
+        cleaned_pid = practitioner_id.strip()
+
+        # Explicitly verify the practitioner exists in the store
+        practitioner = self.data_store.find_practitioner(cleaned_pid)
+        if practitioner is None:
+            raise LookupError(f"Practitioner with ID '{cleaned_pid}' not found.")
+
+        if status is not None and not isinstance(status, AppointmentStatus):
+            raise ValueError("Invalid status filter supplied.")
+
+        all_appointments = self.data_store.list_appointments()
+        return select_appointments(all_appointments, cleaned_pid, status)
