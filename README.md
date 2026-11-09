@@ -7,11 +7,11 @@ Baseline: Stage 6 foundation, 2026 revision 2. This starter deliberately leaves 
 
 - Group and tutorial: Mon 9:30 - 11:30 Group 3
 - Member names, GitHub usernames and UG/PG cohorts: Julin Low [PG] (julianlow83), Labiba Taskin [UG] (Labiba-Taskin), Tanika Young [UG] (u3334655)
-- Shared repository URL: [complete]
-- Latest completed stage: Stage 12 https://github.com/julianlow83/st1-assignment-3
-- Verified code SHA: [complete]
-- Test command, working directory and observed result: [complete]
-- Final submitted SHA, if different from tested code SHA: [complete; explain evidence-only changes]
+- Shared repository URL: https://github.com/julianlow83/st1-assignment-3
+- Latest completed stage: Stage 12 
+- Verified code SHA: https://github.com/julianlow83/st1-assignment-3
+- Test command, working directory and observed result: python -m pytest (44 passed in 0.08s)
+- Final submitted SHA, if different from tested code SHA: N/A
 
 Do not put student IDs, private peer ratings, credentials or personal contact details here.
 
