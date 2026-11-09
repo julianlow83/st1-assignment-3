@@ -5,10 +5,10 @@ Baseline: Stage 6 foundation, 2026 revision 2. This starter deliberately leaves 
 
 ## Group index
 
-- Group and tutorial: [complete]
-- Member names, GitHub usernames and UG/PG cohorts: [complete]
+- Group and tutorial: Mon 9:30 - 11:30 Group 3
+- Member names, GitHub usernames and UG/PG cohorts: Julin Low [PG] (julianlow83), Labiba Taskin [UG] (Labiba-Taskin), Tanika Young [UG] (u3334655)
 - Shared repository URL: [complete]
-- Latest completed stage: [complete]
+- Latest completed stage: STage 12 https://github.com/julianlow83/st1-assignment-3
 - Verified code SHA: [complete]
 - Test command, working directory and observed result: [complete]
 - Final submitted SHA, if different from tested code SHA: [complete; explain evidence-only changes]
