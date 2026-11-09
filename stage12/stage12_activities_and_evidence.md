@@ -48,7 +48,7 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 | Complete common | Python 3.13, pytest 8.3.5 | `project/` | `a8740f759f5ea75d33bc8f08d26e646208725f94` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` |
 | Complete PG if applicable | Python 3.13, pytest 8.3.5 | `project/` | `b6d09324734c9c1fee85e3d920c875cbb0b071a1` | `43 passed in 0.21s` — All common tests plus PG rescheduling (`test_rescheduling.py`) and assurance (`test_assurance.py`) tests passed successfully. | `project/tests/` |
 | Affected focused checks after correction | Python 3.13, pytest 8.3.5 | `project/` | `Same as common/PG release SHA` | `PASSED` — Focused regression and workflow checks verified post-correction without side effects. | `project/tests/`|
-| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | b6ecfb5e1f79c99037f2d7f299028794b73bc143 | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` |
+| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | 8af42a1b46eb24d3fd32bf94b44f3fe8c7beeb22 | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` |
 
 Prior assertions preserved / reviewed test diff: Yes; all historical test assertions from Stages 6 through 11 were strictly preserved without weakening or modification to force green status.
 
