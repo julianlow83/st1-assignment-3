@@ -48,7 +48,7 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 | Complete common | Python 3.13, pytest 8.3.5 | `project/` | `a8740f759f5ea75d33bc8f08d26e646208725f94` | `32 passed in 0.14s` — All accumulated common domain, service, query, and workflow tests passed successfully. | `project/tests/` |
 | Complete PG if applicable | Python 3.13, pytest 8.3.5 | `project/` | `b6d09324734c9c1fee85e3d920c875cbb0b071a1` | `43 passed in 0.21s` — All common tests plus PG rescheduling (`test_rescheduling.py`) and assurance (`test_assurance.py`) tests passed successfully. | `project/tests/` |
 | Affected focused checks after correction | Python 3.13, pytest 8.3.5 | `project/` | `Same as common/PG release SHA` | `PASSED` — Focused regression and workflow checks verified post-correction without side effects. | `project/tests/`|
-| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | `TBA` | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` |
+| Full integrated recheck | Python 3.13, pytest 8.3.5 | `project/` | b6ecfb5e1f79c99037f2d7f299028794b73bc143 | `PASSED` — Complete integrated test suite re-executed cleanly on final release candidate. | `project/tests/` |
 
 Prior assertions preserved / reviewed test diff: Yes; all historical test assertions from Stages 6 through 11 were strictly preserved without weakening or modification to force green status.
 
@@ -131,7 +131,7 @@ PG demonstrations through service/tests or not applicable: Applicable (PG extend
 
 **Known limitations:** Session-only in-memory data persistence (all data is lost when the program terminates), local naive minute-precision datetime evaluation, absence of production authentication/roles, patient web portals, automated SMS/email notifications, financial billing/insurance modules, and clinical decision support AI.
 
-**AI-assisted development note:** GitHub Copilot was utilized selectively under strict human verification and prompt governance, with all suggestions evaluated, tested, and audited against project requirements.
+**AI-assisted development note:** GitHub Copilot was initially utilized selectively under strict human verification and prompt governance, with all suggestions evaluated, tested, and audited against project requirements.
 
 | Debt item | Impact | Priority | Future action | Accepted? / release rationale |
 |---|---|---|---|---|
@@ -196,7 +196,7 @@ Exact common tested SHA: [a8740f759f5ea75d33bc8f08d26e646208725f94]
 
 Exact PG tested SHA or not applicable: [b6d09324734c9c1fee85e3d920c875cbb0b071a1]
 
-Final submitted SHA / repository URL: TBA
+Final submitted SHA / repository URL: b6ecfb5e1f79c99037f2d7f299028794b73bc143
 
 Evidence-only later commit and difference explanation: N/A
 
@@ -272,7 +272,7 @@ The most robust evidence of system readiness is our comprehensive regression tes
 Our primary limitation is the volatile, session-only in-memory data store (SmartCareDataStore). Because all patient, practitioner, and appointment records are held purely in volatile memory collections, every piece of data is permanently discarded when the program terminates. While this complies with the retired persistence scope ($\text{FR-10}$), it restricts the application to single-session administrative use without durable database persistence.
 
 **How AI use changed from Stage 1 to Stage 12:**
-Early in Assignment 2, our use of Copilot was less structured, occasionally treating generated suggestions as ready-to-merge code. By the later stages—particularly during Stage 10 agentic rescheduling and Stage 11 responsible AI assurance, we were using mandatory plan-only prompting, line-by-line responsibility auditing, and independent test verification before accepting any AI-assisted contribution.
+Early in Assignment 2, our use of Copilot was less structured, occasionally treating generated suggestions as ready-to-merge code. By the later stages—particularly during Stage 10 agentic rescheduling and Stage 11 responsible AI assurance, we were using it as an agentic coding assistant and software assurance and security reviewer, it was also used for help with making our documentation more programmer/professional sounding.
 
 **Start doing — engineering and AI use:**
 Enforce a mandatory "plan-first, code-second" workflow for all complex features, ensuring that requirements and edge cases are fully mapped out before inviting AI assistance.
@@ -319,10 +319,10 @@ Optional bounded-change practice only: validation rule, focused test, safe error
 - *Not undertaken.* As permitted by the assignment instructions, bounded-change practice is an optional workflow exercise rather than a compulsory assessment requirement. Our group elected to preserve the verified release candidate (v1.0-release) without further code modifications to ensure stability and pristine test execution across all common and postgraduate suites.
   
 **Separate reflection / peer / common team viva evidence links and routing:**
-- *Group Reflection:* The approximately 500-word group reflection essay has been compiled and routed separately through the published unit submission portal.
+- *Group Reflection:* To be submitted by Friday 13/11/2026
 
-- *Confidential Peer Assessments:* Individual confidential peer assessment forms have been completed independently by each member (Labiba, Tanika, and Julian) and submitted via the designated course route.
+- *Confidential Peer Assessments:* To be submitted by Friday 13/11/2026
 
-- *Team Viva / Oral Evidence:* Common team oral presentation and demonstration artifacts have been arranged and recorded according to the teaching team's published schedule and guidelines.
+- *Team Viva / Oral Evidence:* To be submitted by Friday 13/11/2026
 
 No further coding stage. Later corrections use the published assessment process.
