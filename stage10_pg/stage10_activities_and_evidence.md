@@ -42,8 +42,7 @@ Optional UG contributors: N/A (They are working on 12)
 
 ### B1 Rewrite the vague task
 
-“Improve SmartCare appointment scheduling.” Write your bounded goal, requirements, exclusions, constraints, acceptance criteria and Definition of Done: [response]
-Predicted changed files and human test intentions:
+“Improve SmartCare appointment scheduling.” Write your bounded goal, requirements, exclusions, constraints, acceptance criteria and Definition of Done: 
 
   * **Bounded Goal:** Extend the existing SmartCare in-memory application with guarded appointment rescheduling functionality by introducing typed domain and service methods without modifying existing participant objects or adding persistence layers.
   * **Requirements:** Implement `Appointment.reschedule(new_date_time: datetime) -> None` and `AppointmentService.reschedule_appointment(appointment_id: str, new_date_time: datetime) -> Appointment` according to contracts `RES-01` to `RES-06`, enforcing `RES-05-R2` current-session visibility. Only `SCHEDULED` appointments can move; unknown IDs raise `LookupError`; blank/invalid inputs, terminal statuses (`CANCELLED`/`COMPLETED`), and same-practitioner datetime conflicts raise `ValueError` without state mutation. Self-exclusion permits valid same-time no-ops, and successful moves release the old time slot.
